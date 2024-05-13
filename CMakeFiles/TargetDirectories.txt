@@ -1,0 +1,3 @@
+/home/runner/BachelorProject/CMakeFiles/MyExecutable.dir
+/home/runner/BachelorProject/CMakeFiles/edit_cache.dir
+/home/runner/BachelorProject/CMakeFiles/rebuild_cache.dir

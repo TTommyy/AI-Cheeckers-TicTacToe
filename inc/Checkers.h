@@ -1,8 +1,0 @@
-//
-// Created by tomek on 10.05.2024.
-//
-
-#ifndef BACHELORPROJECT_CHECKERS_H
-#define BACHELORPROJECT_CHECKERS_H
-
-#endif //BACHELORPROJECT_CHECKERS_H
