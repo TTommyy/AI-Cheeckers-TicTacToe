@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-enum class FieldTypeE : int8_t
+enum class FieldTypeE : uint8_t
 {
   White = 0,
   Black = 1

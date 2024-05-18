@@ -3,7 +3,7 @@
 #include "FieldTypeE.h"
 #include "FigureTypeE.h"
 #include "PlayerE.h"
-#include "../../alg/MoveIf.h"
+#include "Move.h"
 
 #include <utility>
 #include <array>
@@ -11,14 +11,14 @@
 #include <vector>
 
 constexpr int8_t BOARD_SIZE = 8;
-
-using Field = std::pair<FieldTypeE, FigureTypeE>;
-using Board = std::array<std::array<Field, BOARD_SIZE>, BOARD_SIZE>;
 class CheckersBoardIf 
 {
 public:
+  using Board = std::array<std::array<FigureTypeE, BOARD_SIZE>, BOARD_SIZE>;
   virtual ~CheckersBoardIf() = default;
-  virtual Board getBoard() const = 0;
   virtual std::string toString() const = 0;
-  virtual std::vector<MoveIf> getPossibleMoves(const PlayerE&) = 0;
+  virtual std::vector<Move> getPossibleMoves(const PlayerE&) const = 0;
+  virtual std::string show() const = 0;
+  virtual Board getBoard() const = 0;
+  virtual void setBoard(Board) = 0;
 };

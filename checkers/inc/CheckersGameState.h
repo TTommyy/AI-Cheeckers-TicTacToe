@@ -3,8 +3,8 @@
 //
 
 #pragma once
-#include "../../alg/GameStateIf.h"
-#include "../../alg/Move.h"
+#include "GameStateIf.h"
+#include "Move.h"
 #include "CheckersBoardIf.h"
 
 #include <string>
@@ -13,12 +13,15 @@ class CheckersGameState : public GameStateIf<2>
 {
 public:
   CheckersGameState();
+  CheckersGameState(std::shared_ptr<CheckersBoardIf>, PlayerE);
   bool isTerminal() const override;
   std::array<int32_t, 2> evaluate() const override;
-  std::vector<std::shared_ptr<MoveIf>> getPossibleMoves() const overide;
-  std::unique_ptr<GameStateIf<2>> applyMove(const std::shared_ptr<MoveIf>) const override;
+  std::vector<Move> getPossibleMoves() const override;
+  std::shared_ptr<GameStateIf<2>> applyMove(const Move) const override;
   std::optional<int32_t> getWinner() const override;
+  void show() const override;
 
 private:
-  std::unique_ptr<CheckersBoardIf> m_board_ptr;
+  std::shared_ptr<CheckersBoardIf> m_board_ptr;
+  PlayerE m_to_move;
 };

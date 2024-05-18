@@ -1,1 +1,0 @@
-/nix/store/dq0xwmsk1g0i2ayg6pb7y87na2knzylh-gcc-wrapper-11.3.0/bin/g++ -rdynamic CMakeFiles/MyExecutable.dir/main/main.cpp.o -o MyExecutable 

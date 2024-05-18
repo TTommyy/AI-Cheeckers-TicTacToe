@@ -5,7 +5,7 @@
 #pragma once
 
 #include "GameStateIf.h"
-#include "MoveIf.h"
+#include "Move.h"
 
 #include <cstdint>
 #include <utility>
@@ -15,14 +15,13 @@
 #include <cmath>
 
 
-std::pair<std::shared_ptr<MoveIf>, int32_t> alphaBetaSearch(std::unique_ptr<GameStateIf<2>> gameState_ptr, int32_t depth, int32_t alpha, int32_t beta, bool maxPlayer)
+std::pair<std::optional<Move>, int32_t> alphaBetaSearch(std::shared_ptr<GameStateIf<2>> gameState_ptr, int32_t depth, int32_t alpha, int32_t beta, bool maxPlayer)
 {
-  if (gameState_ptr->isTerminal() or depth == 0)
-  {
-    return std::make_pair(nullptr, std::get<0>(gameState_ptr->evaluate()));
-  }
-
   const auto moves = gameState_ptr->getPossibleMoves();
+  if (gameState_ptr->isTerminal() || depth == 0 || moves.size() == 0)
+  {
+    return std::make_pair(std::nullopt, std::get<0>(gameState_ptr->evaluate()));
+  }
 
   auto bestMove = moves.front();
 

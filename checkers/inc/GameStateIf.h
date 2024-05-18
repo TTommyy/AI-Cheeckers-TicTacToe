@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "MoveIf.h"
+#include "Move.h"
 
 #include <array>
 #include <cstdint>
@@ -17,7 +17,8 @@ public:
   virtual ~GameStateIf() = default;
   virtual bool isTerminal() const = 0;
   virtual std::array<int32_t, NUMBER_OF_PLAYERS> evaluate() const = 0;
-  virtual std::vector<std::shared_ptr<MoveIf>> getPossibleMoves() const = 0;
-  virtual std::unique_ptr<GameStateIf<NUMBER_OF_PLAYERS>> applyMove(const std::shared_ptr<MoveIf>) const = 0;
+  virtual std::vector<Move> getPossibleMoves() const = 0;
+  virtual std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> applyMove(const Move) const = 0;
   virtual std::optional<int32_t> getWinner() const = 0;
+  virtual void show() const = 0;
 };

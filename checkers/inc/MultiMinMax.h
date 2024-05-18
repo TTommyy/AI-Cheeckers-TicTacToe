@@ -5,7 +5,7 @@
 #pragma once
 
 #include "GameStateIf.h"
-#include "MoveIf.h"
+#include "Move.h"
 
 #include <cstdint>
 #include <utility>
@@ -21,7 +21,7 @@ int32_t getNextPlayer(int32_t currentPlayer)
 }
 
 template<int32_t NUMBER_OF_PLAYERS>
-std::pair<std::shared_ptr<MoveIf>, std::array<int32_t, NUMBER_OF_PLAYERS>> multiMaxMin(std::unique_ptr<GameStateIf<NUMBER_OF_PLAYERS>> gameState_ptr, int32_t depth, int32_t currentPlayer)
+std::pair<std::shared_ptr<Move>, std::array<int32_t, NUMBER_OF_PLAYERS>> multiMaxMin(std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> gameState_ptr, int32_t depth, int32_t currentPlayer)
 {
   if (gameState_ptr->isTerminal() or depth == 0)
   {
