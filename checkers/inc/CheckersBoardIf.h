@@ -21,4 +21,5 @@ public:
   virtual std::string show() const = 0;
   virtual Board getBoard() const = 0;
   virtual void setBoard(Board) = 0;
+  int8_t gerBoardSize(){ return BOARD_SIZE; }
 };

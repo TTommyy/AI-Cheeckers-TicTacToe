@@ -16,6 +16,8 @@ using CapcturesVector = std::vector<std::pair<Move::Field ,std::vector<Move::Fie
 private:
   void intializeBoard();
   CapcturesVector checkIfManCanKill(uint8_t, uint8_t, const PlayerE&, std::vector<Move::Field>, Board) const;
+  CapcturesVector checkIfKingCanKill(uint8_t, uint8_t, const PlayerE&, std::vector<Move::Field>, Board) const;
+  std::vector<Move> checkIfKingCanMove(uint8_t, uint8_t) const;
   bool validField(uint8_t, uint8_t) const;
   bool checkIfOnField(uint8_t, uint8_t, const PlayerE, const Board&) const;
   bool checkIfEmpty(uint8_t, uint8_t, const Board&) const;

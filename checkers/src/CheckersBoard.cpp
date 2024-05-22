@@ -4,7 +4,17 @@
 #include <iostream>
 #include "../inc/Move.h"
 
-// constexpr int32_t BOARD_SIZE = 8;
+namespace
+{
+ const auto directions = std::vector<std::pair<int8_t, int8_t>>
+  {
+    {1, -1},  // upper left
+    {1, 1},   // upper right
+    {-1, 1},  // lower right
+    {-1, -1}  // lower left
+  };
+}
+
 
 CheckersBoard::CheckersBoard()
 {
@@ -36,8 +46,10 @@ std::string CheckersBoard::show() const
     for (const auto& cell : *it)
     {
       auto p = static_cast<int>(cell); 
-      if (p == -1) ss << "2,";
+      if (p == -1) ss << "8,";
       else if (p == 1) ss << "1,";
+      else if (p == -3) ss << "9,";
+      else if (p == 3) ss << "2,";
       else ss << static_cast<int>(cell) << ",";
     }
     ss << "\n";
@@ -77,7 +89,7 @@ std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
         if (m_board[y][x] == FigureTypeE::WhiteMan)
         {
           // [end_field, captures_by_the_way]
-          auto cap_vec = checkIfManCanKill(y,x, player, std::vector<Move::Field>() , m_board);
+          auto cap_vec = checkIfManCanKill(y,x, player, std::vector<Move::Field>(), m_board);
           for (const auto &pair: cap_vec)
           {
             if (pair.second.size() > mostCaptured)
@@ -96,10 +108,32 @@ std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
             moves.emplace_back(std::make_pair(y, x), pair.first, pair.second);
           }
         }
-        
+
+        if (m_board[y][x] == FigureTypeE::WhiteKing)
+        {
+          // [end_field, captures_by_the_way]
+          auto cap_vec = checkIfKingCanKill(y,x, player, std::vector<Move::Field>(), m_board);
+          for (const auto &pair: cap_vec)
+          {
+            if (pair.second.size() > mostCaptured)
+            {
+              mostCaptured = pair.second.size();
+            }
+          }
+          cap_vec.erase(std::remove_if(cap_vec.begin(), cap_vec.end(), 
+            [mostCaptured](const auto& pair)
+              {
+                return pair.second.size() < mostCaptured;
+              }),
+            cap_vec.end());
+          for(const auto &pair: cap_vec)
+          {
+            moves.emplace_back(std::make_pair(y, x), pair.first, pair.second);
+          }
+        }
       }
-        // To do: WhiteKing0
     }
+
     moves.erase(std::remove_if(moves.begin(), moves.end(), 
       [mostCaptured](const auto& move)
       {
@@ -110,6 +144,7 @@ std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
     {
       return moves;
     }
+
 
     // check man move
     for(uint8_t y = 0; y < BOARD_SIZE; ++y)
@@ -136,10 +171,16 @@ std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
             moves.push_back(m);
           }
         }
-        // To do: WhiteKing
+
+        else if (m_board[y][x] == FigureTypeE::WhiteKing)
+        {
+          auto kingMoves = checkIfKingCanMove(y, x);
+          moves.insert(moves.end(), kingMoves.begin(), kingMoves.end());
+        }
       }
     }
   }
+
   else if (player == PlayerE::Black)
   {
     // check man can kill
@@ -154,7 +195,7 @@ std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
         if (m_board[y][x] == FigureTypeE::BlackMan)
         {
           // [end_field, captures_by_the_way]
-          auto cap_vec = checkIfManCanKill(y,x, player, std::vector<Move::Field>() , m_board);
+          auto cap_vec = checkIfManCanKill(y,x, player, std::vector<Move::Field>(), m_board);
           for (const auto &pair: cap_vec)
           {
             if (pair.second.size() > mostCaptured)
@@ -173,10 +214,32 @@ std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
             moves.emplace_back(std::make_pair(y, x), pair.first, pair.second);
           }
         }
-        
+
+        if (m_board[y][x] == FigureTypeE::BlackKing)
+        {
+          // [end_field, captures_by_the_way]
+          auto cap_vec = checkIfKingCanKill(y,x, player, std::vector<Move::Field>(), m_board);
+          for (const auto &pair: cap_vec)
+          {
+            if (pair.second.size() > mostCaptured)
+            {
+              mostCaptured = pair.second.size();
+            }
+          }
+          cap_vec.erase(std::remove_if(cap_vec.begin(), cap_vec.end(), 
+            [mostCaptured](const auto& pair)
+              {
+                return pair.second.size() < mostCaptured;
+              }),
+            cap_vec.end());
+          for(const auto &pair: cap_vec)
+          {
+            moves.emplace_back(std::make_pair(y, x), pair.first, pair.second);
+          }
+        }
       }
-        // To do: BlackKing
     }
+
     moves.erase(std::remove_if(moves.begin(), moves.end(), 
       [mostCaptured](const auto& move)
       {
@@ -213,7 +276,12 @@ std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
             moves.push_back(m);
           }
         }
-        // To do: BlackKing
+
+        else if (m_board[y][x] == FigureTypeE::BlackKing)
+        {
+          auto kingMoves = checkIfKingCanMove(y, x);
+          moves.insert(moves.end(), kingMoves.begin(), kingMoves.end());
+        }
       }
     }
   }
@@ -277,15 +345,7 @@ void CheckersBoard::intializeBoard()
 CheckersBoard::CapcturesVector CheckersBoard::checkIfManCanKill(uint8_t y, uint8_t x, const PlayerE& player, std::vector<Move::Field> cap, Board board) const
 {
   CapcturesVector res;
-  PlayerE enemy;
-  if (player == PlayerE::White)
-  {
-    enemy = PlayerE::Black;
-  }
-  else
-  {
-    enemy = PlayerE::White;
-  }
+  const PlayerE enemy = player == PlayerE::White? PlayerE::Black : PlayerE::White;
 
   // upper left
   if (checkIfOnField(y+1, x-1, enemy, board) && checkIfEmpty(y+2, x-2, board))
@@ -318,6 +378,7 @@ CheckersBoard::CapcturesVector CheckersBoard::checkIfManCanKill(uint8_t y, uint8
     auto recur = checkIfManCanKill(y+2, x+2, player, new_cap, new_board);
     res.insert(res.end(), recur.begin(), recur.end());
   }
+
   // lower right
   if (checkIfOnField(y-1, x+1, enemy, board) && checkIfEmpty(y-2, x+2, board))
   {
@@ -379,4 +440,82 @@ bool CheckersBoard::checkIfOnField(uint8_t y, uint8_t x, PlayerE player, const B
 bool CheckersBoard::checkIfEmpty(uint8_t y, uint8_t x, const Board& board) const
 {
   return validField(y, x) && board[y][x] == FigureTypeE::Empty;
+}
+
+// KingsLogic
+CheckersBoard::CapcturesVector CheckersBoard::checkIfKingCanKill(uint8_t y, uint8_t x, const PlayerE& player, std::vector<Move::Field> cap, Board board) const
+{
+  CapcturesVector res;
+  const PlayerE enemy = player == PlayerE::White ? PlayerE::Black : PlayerE::White;
+
+  for (const auto& [dy, dx] : directions)
+  {
+    uint8_t newY = y;
+    uint8_t newX = x;
+    bool foundCapture = false;
+
+    while (validField(newY + dy, newX + dx))
+    {
+      newY += dy;
+      newX += dx;
+
+      if (checkIfOnField(newY, newX, player, board))
+      {
+        break;
+      }
+
+      if (checkIfOnField(newY, newX, enemy, board))
+      {
+        foundCapture = true;
+        break;
+      }
+    }
+
+    if (foundCapture) 
+    {
+      uint8_t captureY = newY;
+      uint8_t captureX = newX;
+      newY += dy;
+      newX += dx;
+      while (checkIfEmpty(newY, newX, board))
+      {
+        auto new_cap = cap;
+        new_cap.push_back({captureY, captureX});
+        res.push_back(std::make_pair(std::make_pair(newY, newX), new_cap));
+
+        auto new_board = board;
+        new_board[captureY][captureX] = FigureTypeE::Empty;
+        new_board[y][x] = FigureTypeE::Empty;
+        new_board[newY][newX] = FigureTypeE::WhiteKing;
+
+        auto recur = checkIfKingCanKill(newY, newX, player, new_cap, new_board);
+        res.insert(res.end(), recur.begin(), recur.end());
+
+        newY += dy;
+        newX += dx;
+      }
+    }
+  }
+
+  return res;
+}
+
+std::vector<Move> CheckersBoard::checkIfKingCanMove(uint8_t y, uint8_t x) const
+{
+  std::vector<Move> res;
+
+  for (const auto& [dy, dx] : directions)
+  {
+    auto newY = y;
+    auto newX = x;
+    while (checkIfEmpty(newY + dy, newX + dx, m_board))
+    {
+      newY += dy;
+      newX += dx;
+      Move m = Move({y, x}, {newY, newX}, {});
+      res.push_back(m);
+    }
+  }
+
+  return res;
 }

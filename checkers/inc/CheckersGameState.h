@@ -22,6 +22,8 @@ public:
   void show() const override;
 
 private:
+  bool isMan(const FigureTypeE&, const PlayerE&) const;
+  FigureTypeE figureChange(const FigureTypeE&, const PlayerE&, uint8_t) const;
   std::shared_ptr<CheckersBoardIf> m_board_ptr;
-  PlayerE m_to_move;
+  PlayerE m_playerToMove;
 };

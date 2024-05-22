@@ -3,10 +3,10 @@
 #include <iostream>
   
   
-CheckersGameState::CheckersGameState(): m_board_ptr{std::make_shared<CheckersBoard>()}, m_to_move{PlayerE::White}
+CheckersGameState::CheckersGameState(): m_board_ptr{std::make_shared<CheckersBoard>()}, m_playerToMove{PlayerE::White}
 {}
 
-CheckersGameState::CheckersGameState(std::shared_ptr<CheckersBoardIf> board, PlayerE player): m_board_ptr{std::move(board)}, m_to_move{player}
+CheckersGameState::CheckersGameState(std::shared_ptr<CheckersBoardIf> board, PlayerE player): m_board_ptr{std::move(board)}, m_playerToMove{player}
 {}
 
 bool CheckersGameState::isTerminal() const
@@ -38,7 +38,7 @@ std::array<int32_t, 2> CheckersGameState::evaluate() const
 
 std::vector<Move> CheckersGameState::getPossibleMoves() const
 {
-  return m_board_ptr->getPossibleMoves(m_to_move);
+  return m_board_ptr->getPossibleMoves(m_playerToMove);
 }
 std::shared_ptr<GameStateIf<2>> CheckersGameState::applyMove(const Move move) const
 {
@@ -48,32 +48,47 @@ std::shared_ptr<GameStateIf<2>> CheckersGameState::applyMove(const Move move) co
   auto &[old_y, old_x] = move_desctription.from;
   auto &[new_y, new_x] = move_desctription.to;
 
-  auto to_move = bar_board[old_y][old_x];
+  auto figure_to_move = bar_board[old_y][old_x];
   bar_board[old_y][old_x] = FigureTypeE::Empty;
-  bar_board[new_y][new_x] = to_move;
+  bar_board[new_y][new_x] = figureChange(figure_to_move, m_playerToMove, new_y);
   for (const auto& [y, x]: move_desctription.capctured)
   {
     bar_board[y] [x] = FigureTypeE::Empty;
   }
 
-  PlayerE new_to_move = PlayerE::Black;
-  if (m_to_move == PlayerE::Black)
+  PlayerE newPlayerToMove = PlayerE::Black;
+  if (m_playerToMove == PlayerE::Black)
   {
-    new_to_move = PlayerE::White;
+    newPlayerToMove = PlayerE::White;
   }
 
   CheckersBoard new_board;
   new_board.setBoard(bar_board);
-  return std::make_shared<CheckersGameState>(std::make_shared<CheckersBoard>(CheckersBoard(new_board)), new_to_move);
+  return std::make_shared<CheckersGameState>(std::make_shared<CheckersBoard>(CheckersBoard(new_board)), newPlayerToMove);
 }
 
 std::optional<int32_t> CheckersGameState::getWinner() const
 {
-  if (m_to_move == PlayerE::Black) return 100;
+  if (m_playerToMove == PlayerE::Black) return 100;
   return -100;
 }
 
 void CheckersGameState::show() const
 {
   m_board_ptr->show();
+}
+
+bool CheckersGameState::isMan(const FigureTypeE& figure, const PlayerE& player) const
+{
+  if (player == PlayerE::White) return figure == FigureTypeE::WhiteMan;
+  else return figure == FigureTypeE::BlackMan;
+}
+
+FigureTypeE CheckersGameState::figureChange(const FigureTypeE& figure, const PlayerE& player, uint8_t new_y) const
+{
+  if (!isMan(figure, player)) return figure;
+  if (player == PlayerE::White && new_y + 1 == m_board_ptr->gerBoardSize()) return FigureTypeE::WhiteKing;
+  else if (player == PlayerE::Black && new_y == 0) return FigureTypeE::BlackKing;
+
+  return figure;
 }

@@ -2,13 +2,15 @@
 #include "../inc/CheckersGameState.h"
 #include "../inc/AlphaBetaSearch.h"
 #include <iostream>
+#include <fstream>
 
-constexpr int32_t DEPTH = 12;
+constexpr int32_t DEPTH = 6;
 void computerSimulation();
 void humanPlayer();
 void whiteHumanPlayer();
 void blackHumanPlayer();
 void humanGamePlay();
+void generateTimesCvs();
 
 int main() 
 {
@@ -29,7 +31,7 @@ int main()
 void humanPlayer()
 {
   int mode;
-  std::cout << "Enter\n0 if you play with white\n1 if you play with black\n2 if both players are human\n";
+  std::cout << "Enter\n0 if you play with white\n1 if you play with black\n2 if both players are human\n3 if cvs generation\n";
   std:: cin >> mode;
   if (mode == 0)
   {
@@ -42,6 +44,10 @@ void humanPlayer()
   else if (mode == 2)
   {
     humanGamePlay();
+  }
+  else if (mode == 3)
+  {
+    generateTimesCvs();
   }
   else 
   {
@@ -258,5 +264,36 @@ void humanGamePlay()
     std::cout << "Applied move: " << black_moves[user_move].toString();
     gs = gs->applyMove(black_moves[user_move]);
     gs->show();
+  }
+}
+
+void timedAlphaBetaSearch(std::shared_ptr<GameStateIf<2>> gameState_ptr, int32_t depth, int32_t alpha, int32_t beta, bool maxPlayer)
+{
+    auto start = std::chrono::high_resolution_clock::now();
+
+    auto [move, eval] = alphaBetaSearch(gameState_ptr, depth, alpha, beta, maxPlayer);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+
+    // Write depth and elapsed time to CSV file
+    std::ofstream csvFile("timing_results.csv", std::ios::app); // Open in append mode
+    if (csvFile.is_open())
+    {
+        csvFile << depth << "," << elapsed.count() << "\n";
+        csvFile.close();
+    }
+    else
+    {
+        std::cerr << "Unable to open the CSV file for writing." << std::endl;
+    }
+}
+
+void generateTimesCvs()
+{
+  for(auto i = 1; i < 15; i++)
+  {
+    std::shared_ptr<GameStateIf<2>> gs = std::make_shared<CheckersGameState>();
+    timedAlphaBetaSearch(gs, i, -101, 101, true);
   }
 }
