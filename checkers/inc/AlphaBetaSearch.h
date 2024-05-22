@@ -55,7 +55,7 @@ std::pair<std::optional<Move>, int32_t> alphaBetaSearch(std::shared_ptr<GameStat
         bestMove = move;
         val = score;
       }
-      beta = std::min(alpha, val);
+      beta = std::min(beta, val);
       if (val <= alpha)
       {
         break;

@@ -3,7 +3,7 @@
 #include "../inc/AlphaBetaSearch.h"
 #include <iostream>
 
-constexpr int32_t DEPTH = 10;
+constexpr int32_t DEPTH = 12;
 void computerSimulation();
 void humanPlayer();
 void whiteHumanPlayer();
@@ -59,8 +59,8 @@ void computerSimulation()
   int i = 0;
   while(true)
   {
-    auto[move, eval] = alphaBetaSearch(gs, 5, -100, 100, to_move);
-    std::cout << "Evaluation after move " << i << ": " << eval << "\n";
+    auto[move, eval] = alphaBetaSearch(gs, DEPTH, -100, 100, to_move);
+    std::cout << "Evaluation after move " << i++ << ": " << eval << "\n";
     if (!move)
     {
       std::cout << "Winner " << to_move + 1;

@@ -28,8 +28,11 @@ std::string CheckersBoard::toString() const
 std::string CheckersBoard::show() const
 {
   std::stringstream ss;
+
+  auto row = static_cast<int32_t>(BOARD_SIZE - 1);
   for (auto it = m_board.rbegin(); it < m_board.rend(); ++it)
   {
+    ss << row-- << "| "; 
     for (const auto& cell : *it)
     {
       auto p = static_cast<int>(cell); 
@@ -39,6 +42,19 @@ std::string CheckersBoard::show() const
     }
     ss << "\n";
   }
+
+  ss << "  ";
+  for (auto col = 0; col < BOARD_SIZE ; col++)
+  {
+    ss << "--";
+  }
+  ss << "\n   ";
+  for (auto col = 0; col < BOARD_SIZE; col++)
+  {
+    ss << col << " ";
+  }
+  ss << "\n";
+
   std::cout << ss.str();
   return ss.str();
 }
@@ -50,8 +66,8 @@ std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
   if (player == PlayerE::White)
   {
     // check man can kill
-    // only most numbers of kills are vail moves
-    // kiling both directions
+    // only most numbers of kills are vaild moves
+    // kiling four directions
     // check man move
     for (uint8_t y = 0; y < BOARD_SIZE; ++y)
     {
@@ -193,11 +209,11 @@ std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
           // right
           if (checkIfEmpty(y-1, x+1, m_board))
           {
-            Move m({y,x}, {y+1, x+1}, {});
+            Move m({y,x}, {y-1, x+1}, {});
             moves.push_back(m);
           }
         }
-        // To do: WhiteKing
+        // To do: BlackKing
       }
     }
   }
