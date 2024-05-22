@@ -9,7 +9,7 @@ using CapcturesVector = std::vector<std::pair<Move::Field ,std::vector<Move::Fie
   CheckersBoard();
   std::string toString() const override;
   std::vector<Move> getPossibleMoves(const PlayerE&) const override;
-  std::string show() const override;
+  void show() const override;
   Board getBoard() const override;
   void setBoard(Board) override;
 

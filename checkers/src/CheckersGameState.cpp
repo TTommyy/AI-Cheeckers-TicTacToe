@@ -39,13 +39,14 @@ std::array<int32_t, 2> CheckersGameState::evaluate() const
 
 std::vector<Move> CheckersGameState::getPossibleMoves() const
 {
-  // return m_board_ptr->getPossibleMoves(m_playerToMove);
+  return m_board_ptr->getPossibleMoves(m_playerToMove);
   // randomize sequence
-  auto res = m_board_ptr->getPossibleMoves(m_playerToMove);
-  std::random_device rd;
-  std::mt19937 g(rd());
-  std::shuffle(res.begin(), res.end(), g);
-  return res;
+  // auto res = m_board_ptr->getPossibleMoves(m_playerToMove);
+  // std::random_device rd;
+  // std::mt19937 g(rd());
+  // std::shuffle(res.begin(), res.end(), g);
+  // return res;
+  // disabled due to worse performance
 }
 std::shared_ptr<GameStateIf<2>> CheckersGameState::applyMove(const Move move) const
 {

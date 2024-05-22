@@ -35,7 +35,7 @@ std::string CheckersBoard::toString() const
   return ss.str();
 }
 
-std::string CheckersBoard::show() const
+void CheckersBoard::show() const
 {
   std::stringstream ss;
 
@@ -47,8 +47,8 @@ std::string CheckersBoard::show() const
     {
       auto p = static_cast<int>(cell); 
       if (p == -1) ss << "8,";
-      else if (p == 1) ss << "1,";
       else if (p == -3) ss << "9,";
+      else if (p == 1) ss << "1,";
       else if (p == 3) ss << "2,";
       else ss << static_cast<int>(cell) << ",";
     }
@@ -68,7 +68,6 @@ std::string CheckersBoard::show() const
   ss << "\n";
 
   std::cout << ss.str();
-  return ss.str();
 }
 
 std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
@@ -327,17 +326,17 @@ void CheckersBoard::intializeBoard()
   // Initialize black pieces
   for(int x = 1; x < BOARD_SIZE; x += 2)
   { 
-    m_board[5][x] = FigureTypeE::BlackMan;
+    m_board[BOARD_SIZE - 3][x] = FigureTypeE::BlackMan;
   }
 
   for(int x = 0; x < BOARD_SIZE; x += 2)
   { 
-    m_board[6][x] = FigureTypeE::BlackMan;
+    m_board[BOARD_SIZE - 2][x] = FigureTypeE::BlackMan;
   }
 
   for (int x = 1; x < BOARD_SIZE; x += 2)
   {
-    m_board[7][x] = FigureTypeE::BlackMan;
+    m_board[BOARD_SIZE - 1][x] = FigureTypeE::BlackMan;
   }
 
 }
@@ -346,100 +345,29 @@ CheckersBoard::CapcturesVector CheckersBoard::checkIfManCanKill(uint8_t y, uint8
 {
   CapcturesVector res;
   const PlayerE enemy = player == PlayerE::White? PlayerE::Black : PlayerE::White;
-
-  // upper left
-  if (checkIfOnField(y+1, x-1, enemy, board) && checkIfEmpty(y+2, x-2, board))
+  for (const auto& [dy, dx]: directions)
   {
-    auto new_cap = cap;
-    new_cap.push_back({y+1, x-1});
-    res.push_back(std::make_pair(std::make_pair(y+2, x-2), new_cap));
+    if (checkIfOnField(y+dy, x+dx, enemy, board) && checkIfEmpty(y+2*dy, x+2*dx, board))
+    {
+      const auto capturedY = y+dy;
+      const auto capturedX = x+dx;
+      const auto newY = y + 2*dy;
+      const auto newX = x + 2*dx;
+      auto new_cap = cap;
+      new_cap.push_back({capturedY, capturedX});
+      res.push_back(std::make_pair(std::make_pair(newY, newX), new_cap));
 
-    auto new_board = board;
-    new_board[y+1][x-1] = FigureTypeE::Empty;
-    new_board[y][x] = FigureTypeE::Empty;
-    new_board[y+2][x-2] = FigureTypeE::WhiteMan;
+      auto new_board = board;
+      new_board[capturedY][capturedX] = FigureTypeE::Empty;
+      new_board[y][x] = FigureTypeE::Empty;
+      new_board[newY][newX] = FigureTypeE::WhiteMan;
 
-    auto recur = checkIfManCanKill(y+2, x-2, player, new_cap, new_board);
-    res.insert(res.end(), recur.begin(), recur.end());
-  }
-
-  // upper right
-  if (checkIfOnField(y+1, x+1, enemy, board) && checkIfEmpty(y+2, x+2, board))
-  {
-    auto new_cap = cap;
-    new_cap.push_back({y+1, x+1});
-    res.push_back(std::make_pair(std::make_pair(y+2, x+2), new_cap));
-
-    auto new_board = board;
-    new_board[y+1][x+1] = FigureTypeE::Empty;
-    new_board[y][x] = FigureTypeE::Empty;
-    new_board[y+2][x+2] = FigureTypeE::WhiteMan;
-
-    auto recur = checkIfManCanKill(y+2, x+2, player, new_cap, new_board);
-    res.insert(res.end(), recur.begin(), recur.end());
-  }
-
-  // lower right
-  if (checkIfOnField(y-1, x+1, enemy, board) && checkIfEmpty(y-2, x+2, board))
-  {
-    auto new_cap = cap;
-    new_cap.push_back({y-1, x+1});
-    res.push_back(std::make_pair(std::make_pair(y-2, x+2), new_cap));
-
-    auto new_board = board;
-    new_board[y-1][x+1] = FigureTypeE::Empty;
-    new_board[y][x] = FigureTypeE::Empty;
-    new_board[y-2][x+2] = FigureTypeE::WhiteMan;
-
-    auto recur = checkIfManCanKill(y-2, x+2, player, new_cap, new_board);
-    res.insert(res.end(), recur.begin(), recur.end());
-  }
-
-  // lower left
-  if (checkIfOnField(y-1, x-1, enemy, board) && checkIfEmpty(y-2, x-2, board))
-  {
-    auto new_cap = cap;
-    new_cap.push_back({y-1, x-1});
-    res.push_back(std::make_pair(std::make_pair(y-2, x-2), new_cap));
-
-    auto new_board = board;
-    new_board[y-1][x-1] = FigureTypeE::Empty;
-    new_board[y][x] = FigureTypeE::Empty;
-    new_board[y-2][x-2] = FigureTypeE::WhiteMan;
-
-    auto recur = checkIfManCanKill(y-2, x-2, player, new_cap, new_board);
-    res.insert(res.end(), recur.begin(), recur.end());
+      auto recur = checkIfManCanKill(newY, newX, player, new_cap, new_board);
+      res.insert(res.end(), recur.begin(), recur.end());
+    }
   }
 
   return res;
-}
-
-bool CheckersBoard::validField(uint8_t y,  uint8_t x) const
-{
-  return 0 <= y && y < BOARD_SIZE
-      && 0 <= x && x < BOARD_SIZE;
-}
-
-bool CheckersBoard::checkIfOnField(uint8_t y, uint8_t x, PlayerE player, const Board& board) const
-{
-
-  if (!validField(y,x))
-  {
-    return false;
-  }
-
-  const auto field = board[y][x];
-  if (player == PlayerE::White)
-  {
-    return field == FigureTypeE::WhiteMan || field == FigureTypeE::WhiteKing;
-  }
-
-  return field == FigureTypeE::BlackMan || field == FigureTypeE::BlackKing;
-}
-
-bool CheckersBoard::checkIfEmpty(uint8_t y, uint8_t x, const Board& board) const
-{
-  return validField(y, x) && board[y][x] == FigureTypeE::Empty;
 }
 
 // KingsLogic
@@ -518,4 +446,24 @@ std::vector<Move> CheckersBoard::checkIfKingCanMove(uint8_t y, uint8_t x) const
   }
 
   return res;
+}
+
+bool CheckersBoard::validField(uint8_t y,  uint8_t x) const
+{
+  return 0 <= y && y < BOARD_SIZE && 0 <= x && x < BOARD_SIZE;
+}
+
+bool CheckersBoard::checkIfOnField(uint8_t y, uint8_t x, PlayerE player, const Board& board) const
+{
+  if (!validField(y,x)) return false;
+
+  const auto field = board[y][x];
+  return player == PlayerE::White ? 
+     field == FigureTypeE::WhiteMan || field == FigureTypeE::WhiteKing :
+     field == FigureTypeE::BlackMan || field == FigureTypeE::BlackKing;
+}
+
+bool CheckersBoard::checkIfEmpty(uint8_t y, uint8_t x, const Board& board) const
+{
+  return validField(y, x) && board[y][x] == FigureTypeE::Empty;
 }

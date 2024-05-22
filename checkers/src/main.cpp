@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 
-constexpr int32_t DEPTH = 6;
+constexpr int32_t DEPTH = 10;
 void computerSimulation();
 void humanPlayer();
 void whiteHumanPlayer();

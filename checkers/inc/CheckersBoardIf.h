@@ -1,6 +1,4 @@
 #pragma once
-
-#include "FieldTypeE.h"
 #include "FigureTypeE.h"
 #include "PlayerE.h"
 #include "Move.h"
@@ -18,7 +16,7 @@ public:
   virtual ~CheckersBoardIf() = default;
   virtual std::string toString() const = 0;
   virtual std::vector<Move> getPossibleMoves(const PlayerE&) const = 0;
-  virtual std::string show() const = 0;
+  virtual void show() const = 0;
   virtual Board getBoard() const = 0;
   virtual void setBoard(Board) = 0;
   int8_t gerBoardSize(){ return BOARD_SIZE; }
