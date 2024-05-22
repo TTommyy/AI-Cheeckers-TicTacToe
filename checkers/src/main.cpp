@@ -277,7 +277,7 @@ void timedAlphaBetaSearch(std::shared_ptr<GameStateIf<2>> gameState_ptr, int32_t
     std::chrono::duration<double> elapsed = end - start;
 
     // Write depth and elapsed time to CSV file
-    std::ofstream csvFile("timing_results.csv", std::ios::app); // Open in append mode
+    std::ofstream csvFile("random_timing_results.csv", std::ios::app); // Open in append mode
     if (csvFile.is_open())
     {
         csvFile << depth << "," << elapsed.count() << "\n";
