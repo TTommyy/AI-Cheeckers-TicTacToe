@@ -1,13 +1,7 @@
-//
-// Created by tomek on 10.05.2024.
-//
-
 #pragma once
 #include "GameStateIf.h"
 #include "Move.h"
 #include "CheckersBoardIf.h"
-
-#include <string>
 
 class CheckersGameState : public GameStateIf<2>
 {
