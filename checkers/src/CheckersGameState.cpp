@@ -16,6 +16,12 @@ bool CheckersGameState::isTerminal() const
 
 std::array<int32_t, 2> CheckersGameState::evaluate() const
 {
+  if (isTerminal())
+  {
+    auto score = *getWinner();
+    return {score, - score};
+  }
+
   const auto& bar_board = m_board_ptr->getBoard();
   int32_t score = 0;
 
@@ -63,8 +69,8 @@ std::shared_ptr<GameStateIf<2>> CheckersGameState::applyMove(const Move move) co
 
 std::optional<int32_t> CheckersGameState::getWinner() const
 {
-  if (m_to_move == PlayerE::Black) return 0;
-  return 1;
+  if (m_to_move == PlayerE::Black) return 100;
+  return -100;
 }
 
 void CheckersGameState::show() const

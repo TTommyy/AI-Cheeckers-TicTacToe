@@ -18,6 +18,7 @@ public:
   Move(Field from, Field to, std::vector<Field> captured) 
       : m_from{from}, m_to{to}, m_captured{captured}{}
   Move(const Move&) = default;
+  explicit Move() = default;
 
   Move_t getMove() const
   {
@@ -42,6 +43,11 @@ public:
     ss += "\n";
     return ss;
   }
+
+  bool operator==(const Move& other)
+  {
+    return m_from == other.m_from && m_to == other.m_to && m_captured == other.m_captured;
+  } 
 private:
     Field m_from;
     Field m_to;

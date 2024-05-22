@@ -82,7 +82,7 @@ std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
         }
         
       }
-        // To do: WhiteKing
+        // To do: WhiteKing0
     }
     moves.erase(std::remove_if(moves.begin(), moves.end(), 
       [mostCaptured](const auto& move)
