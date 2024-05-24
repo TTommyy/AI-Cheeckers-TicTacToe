@@ -61,11 +61,18 @@ void computerSimulation()
   std::shared_ptr<GameStateIf<2>> gs= std::make_shared<CheckersGameState>();
   gs->show();
 
+  int32_t d;
   bool to_move = true;
   int i = 0;
   while(true)
   {
-    auto[move, eval] = alphaBetaSearch(gs, DEPTH, -100, 100, to_move);
+    if (to_move)
+    {
+      d = 7;
+    }
+    else d = 6;
+
+    auto[move, eval] = alphaBetaSearch(gs, d, -100, 100, to_move);
     std::cout << "Evaluation after move " << i++ << ": " << eval << "\n";
     if (!move)
     {
@@ -277,7 +284,7 @@ void timedAlphaBetaSearch(std::shared_ptr<GameStateIf<2>> gameState_ptr, int32_t
     std::chrono::duration<double> elapsed = end - start;
 
     // Write depth and elapsed time to CSV file
-    std::ofstream csvFile("random_timing_results.csv", std::ios::app); // Open in append mode
+    std::ofstream csvFile("timing_results.csv", std::ios::app); // Open in append mode
     if (csvFile.is_open())
     {
         csvFile << depth << "," << elapsed.count() << "\n";
@@ -291,7 +298,7 @@ void timedAlphaBetaSearch(std::shared_ptr<GameStateIf<2>> gameState_ptr, int32_t
 
 void generateTimesCvs()
 {
-  for(auto i = 1; i < 15; i++)
+  for(auto i = 1; i < 10; i++)
   {
     std::shared_ptr<GameStateIf<2>> gs = std::make_shared<CheckersGameState>();
     timedAlphaBetaSearch(gs, i, -101, 101, true);

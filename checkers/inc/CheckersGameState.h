@@ -8,9 +8,9 @@ class CheckersGameState : public GameStateIf<2>
 public:
   CheckersGameState();
   CheckersGameState(std::shared_ptr<CheckersBoardIf>, PlayerE);
-  bool isTerminal() const override;
-  std::array<int32_t, 2> evaluate() const override;
-  std::vector<Move> getPossibleMoves() const override;
+  bool isTerminal() override;
+  std::array<int32_t, 2> evaluate() override;
+  std::vector<Move> getPossibleMoves() override;
   std::shared_ptr<GameStateIf<2>> applyMove(const Move) const override;
   std::optional<int32_t> getWinner() const override;
   void show() const override;
@@ -20,4 +20,5 @@ private:
   FigureTypeE figureChange(const FigureTypeE&, const PlayerE&, uint8_t) const;
   std::shared_ptr<CheckersBoardIf> m_board_ptr;
   PlayerE m_playerToMove;
+  std::optional<std::vector<Move>> m_possibleMoves;
 };

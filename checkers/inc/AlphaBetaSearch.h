@@ -5,7 +5,6 @@
 #pragma once
 
 #include "GameStateIf.h"
-#include "Move.h"
 
 #include <cstdint>
 #include <utility>
@@ -14,6 +13,7 @@
 #include <memory>
 #include <cmath>
 
+class Move;
 
 std::pair<std::optional<Move>, int32_t> alphaBetaSearch(std::shared_ptr<GameStateIf<2>> gameState_ptr, int32_t depth, int32_t alpha, int32_t beta, bool maxPlayer)
 {

@@ -10,12 +10,12 @@ CheckersGameState::CheckersGameState(): m_board_ptr{std::make_shared<CheckersBoa
 CheckersGameState::CheckersGameState(std::shared_ptr<CheckersBoardIf> board, PlayerE player): m_board_ptr{std::move(board)}, m_playerToMove{player}
 {}
 
-bool CheckersGameState::isTerminal() const
+bool CheckersGameState::isTerminal()
 {
   return getPossibleMoves().size() == 0;
 }
 
-std::array<int32_t, 2> CheckersGameState::evaluate() const
+std::array<int32_t, 2> CheckersGameState::evaluate()
 {
   if (isTerminal())
   {
@@ -37,16 +37,16 @@ std::array<int32_t, 2> CheckersGameState::evaluate() const
   return {score, -score};
 }
 
-std::vector<Move> CheckersGameState::getPossibleMoves() const
+std::vector<Move> CheckersGameState::getPossibleMoves()
 {
-  return m_board_ptr->getPossibleMoves(m_playerToMove);
-  // randomize sequence
-  // auto res = m_board_ptr->getPossibleMoves(m_playerToMove);
+  if (m_possibleMoves) return m_possibleMoves.value();
+  m_possibleMoves = m_board_ptr->getPossibleMoves(m_playerToMove);
+  // std::reverse(m_possibleMoves.value().begin(), m_possibleMoves.value().end());
+  return m_possibleMoves.value();
   // std::random_device rd;
   // std::mt19937 g(rd());
-  // std::shuffle(res.begin(), res.end(), g);
-  // return res;
-  // disabled due to worse performance
+  // std::shuffle(m_possibleMoves.value().begin(), m_possibleMoves.value().end(), g);
+  // return m_possibleMoves.value();
 }
 std::shared_ptr<GameStateIf<2>> CheckersGameState::applyMove(const Move move) const
 {
