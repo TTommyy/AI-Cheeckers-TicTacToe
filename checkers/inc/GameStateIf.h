@@ -1,7 +1,3 @@
-//
-// Created by tomek on 10.05.2024.
-//
-
 #pragma once
 
 #include "Move.h"
@@ -12,13 +8,14 @@
 #include <optional>
 #include <vector>
 
-template <int32_t NUMBER_OF_PLAYERS> class GameStateIf {
+template <int32_t NUMBER_OF_PLAYERS> class GameStateIf
+{
 public:
   virtual ~GameStateIf() = default;
   virtual bool isTerminal() = 0;
   virtual std::array<int32_t, NUMBER_OF_PLAYERS> evaluate() = 0;
   virtual std::vector<Move> getPossibleMoves() = 0;
-  virtual std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> applyMove(const Move) const = 0;
-  virtual std::optional<int32_t> getWinner() const = 0;
+  virtual std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> applyMove(const Move) = 0;
+  virtual std::optional<int32_t> getWinner() = 0;
   virtual void show() const = 0;
 };

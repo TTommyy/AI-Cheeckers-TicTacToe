@@ -1,6 +1,8 @@
 #include "../inc/CheckersBoard.h"
 #include "../inc/CheckersGameState.h"
 #include "../inc/AlphaBetaSearch.h"
+#include "../inc/MultiMinMax.h"
+#include "../inc/TicTacToeGameState.h"
 #include <iostream>
 #include <fstream>
 
@@ -11,20 +13,25 @@ void whiteHumanPlayer();
 void blackHumanPlayer();
 void humanGamePlay();
 void generateTimesCvs();
+void ComputerTicTacToe();
 
 int main() 
 {
- std::cout << "Enter\n0 if Computer Simulation\n1 if HumanPlayer\n";
+  std::cout << "Enter\n0 if Checker Computer Simulation\n1 if Checkers HumanPlayer\n2 if TicTacToe";
 
- int mode;
- std::cin >> mode;
- if (mode == 0)
- {
-  computerSimulation();
- }
+  int mode;
+  std::cin >> mode;
+  if (mode == 0)
+  {
+   computerSimulation();
+  }
   else if(mode == 1)
   {
     humanPlayer();
+  }
+  else if (mode == 2)
+  {
+    ComputerTicTacToe();
   }
 }
 
@@ -61,18 +68,11 @@ void computerSimulation()
   std::shared_ptr<GameStateIf<2>> gs= std::make_shared<CheckersGameState>();
   gs->show();
 
-  int32_t d;
   bool to_move = true;
   int i = 0;
   while(true)
   {
-    if (to_move)
-    {
-      d = 7;
-    }
-    else d = 6;
-
-    auto[move, eval] = alphaBetaSearch(gs, d, -100, 100, to_move);
+    auto[move, eval] = alphaBetaSearch(gs, DEPTH, -100, 100, to_move);
     std::cout << "Evaluation after move " << i++ << ": " << eval << "\n";
     if (!move)
     {
@@ -86,6 +86,33 @@ void computerSimulation()
     gs->show();
   }
 }
+
+void ComputerTicTacToe()
+{
+  std::shared_ptr<GameStateIf<5>> gs= std::make_shared<TicTacToeGameState<5, 8>>();
+  gs->show();
+
+  int d;
+  int to_move = 0;
+  int i = 0;
+  while(!gs->isTerminal())
+  {
+    d = i < 5 ? 1 : 5;
+    auto[move, eval] = multiMaxMin(gs, d, to_move);
+    std::cout << "Evaluation after move " << i++ << ": ";
+    for (auto score: eval) std::cout << score << " ";
+    std::cout << "\n";
+    gs = gs->applyMove(*move);
+    gs->show();
+    if (auto winner = gs->getWinner())
+    {
+      std::cout << "Winner: " << *winner << "\n";
+      return;
+    }
+    to_move = (to_move+1)%5;
+  }
+}
+
 
 void whiteHumanPlayer()
 {
@@ -298,7 +325,7 @@ void timedAlphaBetaSearch(std::shared_ptr<GameStateIf<2>> gameState_ptr, int32_t
 
 void generateTimesCvs()
 {
-  for(auto i = 1; i < 10; i++)
+  for(auto i = 1; i < 13; i++)
   {
     std::shared_ptr<GameStateIf<2>> gs = std::make_shared<CheckersGameState>();
     timedAlphaBetaSearch(gs, i, -101, 101, true);

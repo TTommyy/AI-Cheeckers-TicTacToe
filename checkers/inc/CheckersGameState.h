@@ -11,8 +11,8 @@ public:
   bool isTerminal() override;
   std::array<int32_t, 2> evaluate() override;
   std::vector<Move> getPossibleMoves() override;
-  std::shared_ptr<GameStateIf<2>> applyMove(const Move) const override;
-  std::optional<int32_t> getWinner() const override;
+  std::shared_ptr<GameStateIf<2>> applyMove(const Move) override;
+  std::optional<int32_t> getWinner() override;
   void show() const override;
 
 private:

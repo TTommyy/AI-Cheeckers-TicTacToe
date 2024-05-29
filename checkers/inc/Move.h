@@ -17,8 +17,11 @@ public:
   };
   Move(Field from, Field to, std::vector<Field> captured) 
       : m_from{from}, m_to{to}, m_captured{captured}{}
+  Move(Field field, int32_t player): m_field{field}, m_player{player}
+  {}
   Move(const Move&) = default;
   explicit Move() = default;
+  virtual ~Move() = default;
 
   Move_t getMove() const
   {
@@ -30,7 +33,7 @@ public:
     return m_captured.size();
   }
 
-  std::string toString() const
+  virtual std::string toString() const
   {
     std::string ss;
     ss += ("From: (" + std::to_string(m_from.first) +"," + std::to_string(m_from.second) + ")\n");
@@ -48,6 +51,9 @@ public:
   {
     return m_from == other.m_from && m_to == other.m_to && m_captured == other.m_captured;
   } 
+
+  Field m_field;
+  int32_t m_player;
 private:
     Field m_from;
     Field m_to;

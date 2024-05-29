@@ -48,7 +48,7 @@ std::vector<Move> CheckersGameState::getPossibleMoves()
   // std::shuffle(m_possibleMoves.value().begin(), m_possibleMoves.value().end(), g);
   // return m_possibleMoves.value();
 }
-std::shared_ptr<GameStateIf<2>> CheckersGameState::applyMove(const Move move) const
+std::shared_ptr<GameStateIf<2>> CheckersGameState::applyMove(const Move move)
 {
   auto bar_board = m_board_ptr->getBoard();
   auto move_desctription = move.getMove();
@@ -75,7 +75,7 @@ std::shared_ptr<GameStateIf<2>> CheckersGameState::applyMove(const Move move) co
   return std::make_shared<CheckersGameState>(std::make_shared<CheckersBoard>(CheckersBoard(new_board)), newPlayerToMove);
 }
 
-std::optional<int32_t> CheckersGameState::getWinner() const
+std::optional<int32_t> CheckersGameState::getWinner()
 {
   if (m_playerToMove == PlayerE::Black) return 100;
   return -100;
