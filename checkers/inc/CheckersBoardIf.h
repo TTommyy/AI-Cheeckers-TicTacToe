@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-constexpr int8_t BOARD_SIZE = 8;
+constexpr int32_t BOARD_SIZE = 8;
 class CheckersBoardIf 
 {
 public:
@@ -16,8 +16,8 @@ public:
   virtual ~CheckersBoardIf() = default;
   virtual std::string toString() const = 0;
   virtual std::vector<Move> getPossibleMoves(const PlayerE&) const = 0;
-  virtual void show() const = 0;
+  virtual void show() = 0;
   virtual Board getBoard() const = 0;
   virtual void setBoard(Board) = 0;
-  int8_t gerBoardSize(){ return BOARD_SIZE; }
+  int32_t gerBoardSize(){ return BOARD_SIZE; }
 };

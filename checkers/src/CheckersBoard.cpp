@@ -6,7 +6,7 @@
 
 namespace
 {
-  using DirectionVector = std::vector<std::pair<int8_t, int8_t>>;
+  using DirectionVector = std::vector<std::pair<int32_t, int32_t>>;
   const auto ALL_DIRECTIONS = DirectionVector
   {
     {1, -1},  // upper left
@@ -48,7 +48,7 @@ std::string CheckersBoard::toString() const
   return ss.str();
 }
 
-void CheckersBoard::show() const
+void CheckersBoard::show()
 {
   std::stringstream ss;
 
@@ -86,12 +86,12 @@ void CheckersBoard::show() const
 std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
 {
   std::vector<Move> moves;
-  uint8_t mostCaptured = 0;
+  int32_t mostCaptured = 0;
 
   // check man can kill
-  for (uint8_t y = 0; y < BOARD_SIZE; ++y)
+  for (int32_t y = 0; y < BOARD_SIZE; ++y)
   {
-    for (uint8_t x = 0; x < BOARD_SIZE; ++x)
+    for (int32_t x = 0; x < BOARD_SIZE; ++x)
     {
       const auto& figure = m_board[y][x];
       // check man kill
@@ -138,9 +138,9 @@ std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
   }
 
   // check man move
-  for(uint8_t y = 0; y < BOARD_SIZE; ++y)
+  for(int32_t y = 0; y < BOARD_SIZE; ++y)
   {
-    for(uint8_t x = 0; x < BOARD_SIZE; ++x)
+    for(int32_t x = 0; x < BOARD_SIZE; ++x)
     {
       // check man move
       const auto& figure = m_board[y][x];
@@ -208,7 +208,7 @@ void CheckersBoard::intializeBoard()
   }
 }
 
-CheckersBoard::CapcturesVector CheckersBoard::checkIfManCanKill(uint8_t y, uint8_t x, const PlayerE& player, std::vector<Move::Field> cap, Board board) const
+CheckersBoard::CapcturesVector CheckersBoard::checkIfManCanKill(int32_t y, int32_t x, const PlayerE& player, std::vector<Move::Field> cap, Board board) const
 {
   CapcturesVector res;
   const PlayerE enemy = player == PlayerE::White? PlayerE::Black : PlayerE::White;
@@ -238,15 +238,15 @@ CheckersBoard::CapcturesVector CheckersBoard::checkIfManCanKill(uint8_t y, uint8
 }
 
 // KingsLogic
-CheckersBoard::CapcturesVector CheckersBoard::checkIfKingCanKill(uint8_t y, uint8_t x, const PlayerE& player, std::vector<Move::Field> cap, Board board) const
+CheckersBoard::CapcturesVector CheckersBoard::checkIfKingCanKill(int32_t y, int32_t x, const PlayerE& player, std::vector<Move::Field> cap, Board board) const
 {
   CapcturesVector res;
   const PlayerE enemy = player == PlayerE::White ? PlayerE::Black : PlayerE::White;
 
   for (const auto& [dy, dx] : ALL_DIRECTIONS)
   {
-    uint8_t newY = y;
-    uint8_t newX = x;
+    int32_t newY = y;
+    int32_t newX = x;
     bool foundCapture = false;
 
     while (validField(newY + dy, newX + dx))
@@ -268,8 +268,8 @@ CheckersBoard::CapcturesVector CheckersBoard::checkIfKingCanKill(uint8_t y, uint
 
     if (foundCapture) 
     {
-      uint8_t captureY = newY;
-      uint8_t captureX = newX;
+      int32_t captureY = newY;
+      int32_t captureX = newX;
       newY += dy;
       newX += dx;
       while (checkIfEmpty(newY, newX, board))
@@ -295,7 +295,7 @@ CheckersBoard::CapcturesVector CheckersBoard::checkIfKingCanKill(uint8_t y, uint
   return res;
 }
 
-std::vector<Move> CheckersBoard::checkIfManCanMove(uint8_t y, uint8_t x, const PlayerE& player) const
+std::vector<Move> CheckersBoard::checkIfManCanMove(int32_t y, int32_t x, const PlayerE& player) const
 {
   std::vector<Move> res;
   DirectionVector dv = player == PlayerE::White? AHEAD_DIRECTIONS : BACKWARDS_DIRECTIONS;
@@ -315,7 +315,7 @@ std::vector<Move> CheckersBoard::checkIfManCanMove(uint8_t y, uint8_t x, const P
   return res;
 }
 
-std::vector<Move> CheckersBoard::checkIfKingCanMove(uint8_t y, uint8_t x) const
+std::vector<Move> CheckersBoard::checkIfKingCanMove(int32_t y, int32_t x) const
 {
   std::vector<Move> res;
 
@@ -335,12 +335,12 @@ std::vector<Move> CheckersBoard::checkIfKingCanMove(uint8_t y, uint8_t x) const
   return res;
 }
 
-bool CheckersBoard::validField(uint8_t y,  uint8_t x) const
+bool CheckersBoard::validField(int32_t y,  int32_t x) const
 {
   return 0 <= y && y < BOARD_SIZE && 0 <= x && x < BOARD_SIZE;
 }
 
-bool CheckersBoard::checkIfOnField(uint8_t y, uint8_t x, PlayerE player, const Board& board) const
+bool CheckersBoard::checkIfOnField(int32_t y, int32_t x, PlayerE player, const Board& board) const
 {
   if (!validField(y,x)) return false;
 
@@ -350,7 +350,7 @@ bool CheckersBoard::checkIfOnField(uint8_t y, uint8_t x, PlayerE player, const B
      field == FigureTypeE::BlackMan || field == FigureTypeE::BlackKing;
 }
 
-bool CheckersBoard::checkIfEmpty(uint8_t y, uint8_t x, const Board& board) const
+bool CheckersBoard::checkIfEmpty(int32_t y, int32_t x, const Board& board) const
 {
   return validField(y, x) && board[y][x] == FigureTypeE::Empty;
 }

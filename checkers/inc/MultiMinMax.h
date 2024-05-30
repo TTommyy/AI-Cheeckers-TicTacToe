@@ -9,6 +9,7 @@
 #include <limits>
 #include <iostream>
 #include <memory>
+#include <numeric>
 
 template <int32_t NUMBER_OF_PLAYERS>
 int32_t getNextPlayer(int32_t currentPlayer)
@@ -30,16 +31,18 @@ std::pair<std::shared_ptr<Move>, std::array<int32_t, NUMBER_OF_PLAYERS>> multiMa
 
   std::array<int32_t, NUMBER_OF_PLAYERS> bestScore;
   bestScore.fill(INT32_MIN);
+  auto bestSum = std::accumulate(bestScore.begin(), bestScore.end(), 0);
   for (const auto& move : moves)
   {
     auto newState = gameState_ptr->applyMove(move);
     const auto [_, score] = multiMaxMin<NUMBER_OF_PLAYERS>(newState, depth - 1, nextPlayer);
-    if (score[currentPlayer] > bestScore[currentPlayer])
+    const auto newSum = std::accumulate(score.begin(), score.end(), 0);
+    if (score[currentPlayer] > bestScore[currentPlayer] || (score[currentPlayer] == bestScore[currentPlayer] && newSum < bestSum))
     {
       bestMove = move;
       bestScore = score;
+      bestSum = newSum;
     }
   }
-
   return {std::make_shared<Move>(bestMove), bestScore};
 }

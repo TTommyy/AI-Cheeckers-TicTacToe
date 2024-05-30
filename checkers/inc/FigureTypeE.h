@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-enum class FigureTypeE : int8_t 
+enum class FigureTypeE : int32_t 
 {
   Empty = 0,
   WhiteMan = 1,

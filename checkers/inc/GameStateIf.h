@@ -17,5 +17,5 @@ public:
   virtual std::vector<Move> getPossibleMoves() = 0;
   virtual std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> applyMove(const Move) = 0;
   virtual std::optional<int32_t> getWinner() = 0;
-  virtual void show() const = 0;
+  virtual void show() = 0;
 };

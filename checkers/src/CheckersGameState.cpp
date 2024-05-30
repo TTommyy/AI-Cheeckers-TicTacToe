@@ -81,7 +81,7 @@ std::optional<int32_t> CheckersGameState::getWinner()
   return -100;
 }
 
-void CheckersGameState::show() const
+void CheckersGameState::show()
 {
   m_board_ptr->show();
 }
@@ -92,7 +92,7 @@ bool CheckersGameState::isMan(const FigureTypeE& figure, const PlayerE& player) 
   else return figure == FigureTypeE::BlackMan;
 }
 
-FigureTypeE CheckersGameState::figureChange(const FigureTypeE& figure, const PlayerE& player, uint8_t new_y) const
+FigureTypeE CheckersGameState::figureChange(const FigureTypeE& figure, const PlayerE& player, int32_t new_y) const
 {
   if (!isMan(figure, player)) return figure;
   if (player == PlayerE::White && new_y + 1 == m_board_ptr->gerBoardSize()) return FigureTypeE::WhiteKing;

@@ -8,7 +8,7 @@
 class Move
 {
 public:
-  using Field = std::pair<uint8_t, uint8_t>;
+  using Field = std::pair<int32_t, int32_t>;
   struct Move_t
   {
     Field from;
@@ -28,7 +28,7 @@ public:
     return {m_from, m_to, m_captured};
   }
 
-  uint8_t getNumberOfCaptured() const
+  int32_t getNumberOfCaptured() const
   {
     return m_captured.size();
   }

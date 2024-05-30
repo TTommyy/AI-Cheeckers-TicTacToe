@@ -10,9 +10,9 @@
 #include <algorithm>
 
 constexpr int32_t REMOVED_FIELD{-1};
-constexpr auto REMOVED_FIELD_FACTOR{0.15f};
+constexpr auto REMOVED_FIELD_FACTOR{0.35f};
 constexpr int32_t WINNING_LENGTH{4};
-using DirectionVector = std::vector<std::pair<int8_t, int8_t>>;
+using DirectionVector = std::vector<std::pair<int32_t, int32_t>>;
 const DirectionVector UP_DOWN = {{1, 0}, {-1, 0}};
 const DirectionVector LEFT_RIGHT = {{0, -1}, {0, 1}};
 const DirectionVector LEFT_DOWN_RIGTH_UP = {{-1, -1}, {1, 1}};
@@ -32,7 +32,7 @@ int32_t getNextPlayer(int32_t currentPlayer)
 }
 
 
-template<int32_t NUMBER_OF_PLAYERS, uint8_t BOARD_SIZE>
+template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
 TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::TicTacToeGameState()
 {
   initBoard();
@@ -40,7 +40,7 @@ TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::TicTacToeGameState()
   m_moveCounter = 0;
 }
 
-template<int32_t NUMBER_OF_PLAYERS, uint8_t BOARD_SIZE>
+template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
 TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::TicTacToeGameState(const Board& board, int32_t player, int32_t count, std::array<std::vector<Field>, NUMBER_OF_PLAYERS>& placedMoves): m_board{board}
 {
   m_playerToMove = player;
@@ -48,7 +48,7 @@ TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::TicTacToeGameState(const Boar
   m_placedMoves = placedMoves;
 }
   
-template<int32_t NUMBER_OF_PLAYERS, uint8_t BOARD_SIZE>
+template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
 bool TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::isTerminal()
 {
   if (getWinner()) return true;
@@ -66,7 +66,7 @@ bool TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::isTerminal()
   return true;
 }
 
-template<int32_t NUMBER_OF_PLAYERS, uint8_t BOARD_SIZE>
+template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
 int32_t TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::checkWinningCondition(int32_t player, int32_t y, int32_t x)
 {
   int32_t highest{0};
@@ -91,7 +91,7 @@ int32_t TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::checkWinningCondition
   return highest;
 }
 
-template<int32_t NUMBER_OF_PLAYERS, uint8_t BOARD_SIZE>
+template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
 std::array<int32_t, NUMBER_OF_PLAYERS> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::evaluate() 
 {
   if (m_scores_opt) return m_scores_opt.value();
@@ -103,7 +103,6 @@ std::array<int32_t, NUMBER_OF_PLAYERS> TicTacToeGameState<NUMBER_OF_PLAYERS, BOA
     if (moves.size() == 1 && moves[0].m_player == -1) // one move pass
     {
       scores[player] = -100;
-      std::cout << "no moves\n";
       continue;
     }
 
@@ -119,6 +118,7 @@ std::array<int32_t, NUMBER_OF_PLAYERS> TicTacToeGameState<NUMBER_OF_PLAYERS, BOA
     {
       scores.fill(-100);
       scores[player] = 100;
+      m_scores_opt = scores;
       return scores;
     }
     scores[player] = maxForPlayer;
@@ -128,7 +128,7 @@ std::array<int32_t, NUMBER_OF_PLAYERS> TicTacToeGameState<NUMBER_OF_PLAYERS, BOA
   return scores;
 }
 
-template<int32_t NUMBER_OF_PLAYERS, uint8_t BOARD_SIZE>
+template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
 std::vector<Move> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::getPossibleMoves()
 {
   auto moves = getPossibleMoves(m_playerToMove);
@@ -138,7 +138,7 @@ std::vector<Move> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::getPossible
   return moves;
 }
 
-template<int32_t NUMBER_OF_PLAYERS, uint8_t BOARD_SIZE>
+template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
 std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::applyMove(const Move move)
 {
   const auto [row, col] = move.m_field;
@@ -146,15 +146,16 @@ std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> TicTacToeGameState<NUMBER_OF_PLA
 
 
   Board board = m_board;
+  auto placedMoves = m_placedMoves;
   if (player != -1) // pass
   {
     board[row][col] = player + 1;// 0 is empty
+    placedMoves[player].push_back(move.m_field);
   }
-  m_placedMoves[player].push_back(move.m_field);
-  return std::make_shared<TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>>(board, getNextPlayer<NUMBER_OF_PLAYERS>(m_playerToMove), m_moveCounter+1, m_placedMoves);
+  return std::make_shared<TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>>(board, getNextPlayer<NUMBER_OF_PLAYERS>(m_playerToMove), m_moveCounter+1, placedMoves);
 }
 
-template<int32_t NUMBER_OF_PLAYERS, uint8_t BOARD_SIZE>
+template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
 std::optional<int32_t> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>:: getWinner()
 {
   auto evals = evaluate();
@@ -166,10 +167,21 @@ std::optional<int32_t> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>:: getWi
   return std::nullopt;
 }
 
-template<int32_t NUMBER_OF_PLAYERS, uint8_t BOARD_SIZE>
-void TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::show() const
+template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
+void TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::show()
 {
   std::stringstream ss;
+
+  if constexpr (true)// debug
+  {
+    ss << "PlayerToMove: " << m_playerToMove  + 1<< "\n"
+       << "MoveCounter: " << m_moveCounter<< "\nScores: ";
+    for (auto score: evaluate())
+    {
+      ss << score << " ";
+    }
+    ss << "\n";
+  }
 
   auto row = static_cast<int32_t>(BOARD_SIZE - 1);
   for (auto it = m_board.rbegin(); it < m_board.rend(); ++it)
@@ -200,25 +212,23 @@ void TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::show() const
 }
 
 
-template<int32_t NUMBER_OF_PLAYERS, uint8_t BOARD_SIZE>
+template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
 std::vector<Move> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::getPossibleMoves(int32_t player)
 {
   if (m_possibleMoves.contains(player)) 
   {
-    std::cout <<"er\n";
     return m_possibleMoves[player];
   }
 
   std::vector<Move> res;
-  if (m_moveCounter < NUMBER_OF_PLAYERS)
+  if (m_moveCounter < NUMBER_OF_PLAYERS) // first moves
   {
-    for (auto y = 0; y < BOARD_SIZE; y++)
+    for (auto y = 1; y < BOARD_SIZE -1; y++)
     {
-      for (auto x = 0; x < BOARD_SIZE; x++)
+      for (auto x = 1; x < BOARD_SIZE -1; x++)
       {
         if (m_board[y][x] == 0)
         {
-          // std::cout << "pus1\n";
           res.push_back(Move(std::make_pair(y, x), player));
         }
       }
@@ -228,14 +238,12 @@ std::vector<Move> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::getPossible
   {
     for (const auto& field: m_placedMoves[player])
     {
-      std::cout << "fuck yeah\n";
       for (const auto& line: ALL_DIRECTION)
       {
         for (const auto& [dy, dx]: line)
         {
           auto newY = field.first + dy;
           auto newX = field.second + dx;
-          std::cout << "pushing " << newY << "\n";
           if (validField(newY, newX) && m_board[newY][newX] == 0)
           {
             res.push_back(Move(std::make_pair(newY, newX), player));
@@ -250,7 +258,7 @@ std::vector<Move> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::getPossible
   return res;
 }
 
-template<int32_t NUMBER_OF_PLAYERS, uint8_t BOARD_SIZE>
+template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
 void TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::initBoard() 
 {
     Board board;
@@ -266,11 +274,11 @@ void TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::initBoard()
     int32_t fieldsToRemove = static_cast<int32_t>(totalFields * REMOVED_FIELD_FACTOR);
 
     std::vector<std::pair<int32_t, int32_t>> allPositions;
-    for (int32_t i = 0; i < BOARD_SIZE; ++i)
+    for (int32_t y = 0; y < BOARD_SIZE; ++y)
     {
-        for (int32_t j = 0; j < BOARD_SIZE; ++j)
+        for (int32_t x = 0; x < BOARD_SIZE; ++x)
         {
-            allPositions.emplace_back(i, j);
+            allPositions.emplace_back(y, x);
         }
     }
 
@@ -287,10 +295,14 @@ void TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::initBoard()
     m_board = board;
 }
 
-template<int32_t NUMBER_OF_PLAYERS, uint8_t BOARD_SIZE>
-bool TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::validField(uint8_t y, uint8_t x)
+template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
+bool TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::validField(int32_t y, int32_t x)
 {
-  return 0 <= y < BOARD_SIZE && 0 <= x < BOARD_SIZE && m_board[y][x] != REMOVED_FIELD;
+  return 0 <= y && y < BOARD_SIZE && 0 <= x  && x < BOARD_SIZE && m_board[y][x] != REMOVED_FIELD;
 }
 
-template class TicTacToeGameState<5, 8>;
+template class TicTacToeGameState<int32_t(3), int32_t(6)>;
+template class TicTacToeGameState<int32_t(4), int32_t(7)>;
+template class TicTacToeGameState<int32_t(5), int32_t(10)>;
+
+

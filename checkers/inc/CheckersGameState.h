@@ -13,11 +13,11 @@ public:
   std::vector<Move> getPossibleMoves() override;
   std::shared_ptr<GameStateIf<2>> applyMove(const Move) override;
   std::optional<int32_t> getWinner() override;
-  void show() const override;
+  void show() override;
 
 private:
   bool isMan(const FigureTypeE&, const PlayerE&) const;
-  FigureTypeE figureChange(const FigureTypeE&, const PlayerE&, uint8_t) const;
+  FigureTypeE figureChange(const FigureTypeE&, const PlayerE&, int32_t) const;
   std::shared_ptr<CheckersBoardIf> m_board_ptr;
   PlayerE m_playerToMove;
   std::optional<std::vector<Move>> m_possibleMoves;

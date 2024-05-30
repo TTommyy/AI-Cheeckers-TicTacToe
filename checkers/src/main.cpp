@@ -17,7 +17,7 @@ void ComputerTicTacToe();
 
 int main() 
 {
-  std::cout << "Enter\n0 if Checker Computer Simulation\n1 if Checkers HumanPlayer\n2 if TicTacToe";
+  std::cout << "Enter\n0 if Checker Computer Simulation\n1 if Checkers HumanPlayer\n2 if TicTacToe\n";
 
   int mode;
   std::cin >> mode;
@@ -87,9 +87,17 @@ void computerSimulation()
   }
 }
 
+namespace
+{
+  constexpr int32_t NUMBER_OF_PLAYERS{3};
+  constexpr int32_t FIRST_MOVE_DEPTH{6};
+  constexpr int32_t MOVE_DEPTH{9};
+  constexpr int32_t TIC_TAC_BOARD_SIZE{6};
+}
+
 void ComputerTicTacToe()
 {
-  std::shared_ptr<GameStateIf<5>> gs= std::make_shared<TicTacToeGameState<5, 8>>();
+  std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> gs= std::make_shared<TicTacToeGameState<NUMBER_OF_PLAYERS, TIC_TAC_BOARD_SIZE>>();
   gs->show();
 
   int d;
@@ -97,19 +105,20 @@ void ComputerTicTacToe()
   int i = 0;
   while(!gs->isTerminal())
   {
-    d = i < 5 ? 1 : 5;
-    auto[move, eval] = multiMaxMin(gs, d, to_move);
-    std::cout << "Evaluation after move " << i++ << ": ";
-    for (auto score: eval) std::cout << score << " ";
-    std::cout << "\n";
+    d = i < NUMBER_OF_PLAYERS ? FIRST_MOVE_DEPTH : MOVE_DEPTH;
+    auto[move, evals] = multiMaxMin(gs, d, to_move);
     gs = gs->applyMove(*move);
     gs->show();
+    std::cout << "Future predictions: ";
+    for (auto e: evals) std::cout << e << " ";
+    std::cout << "\n";
     if (auto winner = gs->getWinner())
     {
-      std::cout << "Winner: " << *winner << "\n";
+      std::cout << "Winner: " << *winner + 1<< "\n";
       return;
     }
-    to_move = (to_move+1)%5;
+    to_move = (to_move+1)%NUMBER_OF_PLAYERS;
+    i++;
   }
 }
 

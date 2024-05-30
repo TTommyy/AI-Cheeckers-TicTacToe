@@ -4,7 +4,7 @@
 #include "Move.h"
 #include <unordered_map>
 
-template<int32_t NUMBER_OF_PLAYERS, uint8_t BOARD_SIZE>
+template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
 class TicTacToeGameState : public GameStateIf<NUMBER_OF_PLAYERS>
 {
 public:
@@ -17,11 +17,11 @@ using Field = std::pair<int32_t, int32_t>;
   std::vector<Move> getPossibleMoves() override;
   std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> applyMove(const Move) override;
   std::optional<int32_t> getWinner() override;
-  void show() const override;
+  void show() override;
 
 private:
   void initBoard();
-  bool validField(uint8_t, uint8_t);
+  bool validField(int32_t, int32_t);
   int32_t checkWinningCondition(int32_t, int32_t, int32_t);
   std::vector<Move> getPossibleMoves(int32_t);
 
