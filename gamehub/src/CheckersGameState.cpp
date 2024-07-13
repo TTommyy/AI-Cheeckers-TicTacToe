@@ -1,5 +1,5 @@
-#include "../inc/CheckersGameState.h"
-#include "../inc/CheckersBoard.h"
+#include "CheckersGameState.h"
+#include "CheckersBoard.h"
 #include <iostream>
 #include <algorithm>
 #include <random>

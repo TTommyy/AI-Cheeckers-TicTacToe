@@ -1,8 +1,8 @@
-#include "../inc/CheckersBoard.h"
+#include "CheckersBoard.h"
 #include <sstream>
 #include <algorithm>
 #include <iostream>
-#include "../inc/Move.h"
+#include "Move.h"
 
 namespace
 {

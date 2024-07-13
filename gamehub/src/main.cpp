@@ -1,65 +1,86 @@
-#include "../inc/CheckersBoard.h"
-#include "../inc/CheckersGameState.h"
-#include "../inc/AlphaBetaSearch.h"
-#include "../inc/MultiMinMax.h"
-#include "../inc/TicTacToeGameState.h"
+#include "CheckersBoard.h"
+#include "CheckersGameState.h"
+#include "AlphaBetaSearch.h"
+#include "MultiMinMax.h"
+#include "TicTacToeGameState.h"
 #include <iostream>
 #include <fstream>
 
 constexpr int32_t DEPTH = 10;
 void computerSimulation();
-void humanPlayer();
 void whiteHumanPlayer();
 void blackHumanPlayer();
 void humanGamePlay();
-void generateTimesCvs();
 void ComputerTicTacToe();
 
-int main() 
+void welcomeUser()
 {
-  std::cout << "Enter\n0 if Checker Computer Simulation\n1 if Checkers HumanPlayer\n2 if TicTacToe\n";
+  std::cout 
+    << "    Welcome to the game hub. Choose your game by entering number:\n"
+    << "    1 - Checkers\n"
+    << "    2 - TicTacToe\n"
+    << "    0 - Quit\n";
+}
+
+int exitProgram()
+{
+  std::cout << "    Goodbye!!!\n";
+  return 0;
+}
+
+void checkersMenu()
+{
+  system("clear");
+  std::cout 
+    << "    Cheeckers. Entrer correct mode\n"
+    << "    1 - White Human Player\n"
+    << "    2 - Black Human Player\n"
+    << "    3 - Both Human Players\n"
+    << "    4 - Both Computer Players\n"
+    << "    0 - Quit\n";
 
   int mode;
   std::cin >> mode;
-  if (mode == 0)
+  system("clear");
+  switch (mode)
   {
-   computerSimulation();
-  }
-  else if(mode == 1)
-  {
-    humanPlayer();
-  }
-  else if (mode == 2)
-  {
-    ComputerTicTacToe();
+  case 0:
+    exitProgram();
+    return;
+  case 1:
+    whiteHumanPlayer();
+    break;
+  case 2:
+    blackHumanPlayer();
+    break;
+  case 3:
+    humanGamePlay();
+    break;
+  case 4:
+    computerSimulation();
+    break;
+  default:
+    std::cout << "Wrong!\n";
+    checkersMenu();
+    break;
   }
 }
 
-void humanPlayer()
+int main() 
 {
+  welcomeUser();
   int mode;
-  std::cout << "Enter\n0 if you play with white\n1 if you play with black\n2 if both players are human\n3 if cvs generation\n";
-  std:: cin >> mode;
-  if (mode == 0)
+  std::cin >> mode;
+  switch (mode)
   {
-    whiteHumanPlayer();
-  }
-  else if (mode == 1)
-  {
-    blackHumanPlayer();
-  }
-  else if (mode == 2)
-  {
-    humanGamePlay();
-  }
-  else if (mode == 3)
-  {
-    generateTimesCvs();
-  }
-  else 
-  {
-    std::cout << "Wrong mode. Ending program\n";
-    return;
+    case 0:
+      return exitProgram();
+    case 1:
+      checkersMenu();
+      break;
+    case 2:
+      ComputerTicTacToe();
+      break;
   }
 }
 
@@ -89,10 +110,10 @@ void computerSimulation()
 
 namespace
 {
-  constexpr int32_t NUMBER_OF_PLAYERS{3};
-  constexpr int32_t FIRST_MOVE_DEPTH{6};
-  constexpr int32_t MOVE_DEPTH{9};
-  constexpr int32_t TIC_TAC_BOARD_SIZE{6};
+  constexpr int32_t NUMBER_OF_PLAYERS{4};
+  constexpr int32_t FIRST_MOVE_DEPTH{1};
+  constexpr int32_t MOVE_DEPTH{10};
+  constexpr int32_t TIC_TAC_BOARD_SIZE{7};
 }
 
 void ComputerTicTacToe()
@@ -159,7 +180,7 @@ void whiteHumanPlayer()
       }
       else valid_move = true;
     }
-
+    system("clear");
     std::cout << "Applied move: " << moves[user_move].toString();
     gs = gs->applyMove(moves[user_move]);
     gs->show();
@@ -228,7 +249,7 @@ void blackHumanPlayer()
       }
       else valid_move = true;
     }
-
+    system("clear");
     std::cout << "Applied move: " << moves[user_move].toString();
     gs = gs->applyMove(moves[user_move]);
     gs->show();
@@ -242,6 +263,7 @@ void humanGamePlay()
 
   while(true)
   {
+
     const auto white_moves = gs->getPossibleMoves();
     if (white_moves.size() == 0)
     {
@@ -270,7 +292,7 @@ void humanGamePlay()
       }
       else valid_move = true;
     }
-
+    system("clear");
     std::cout << "Applied move: " << white_moves[user_move].toString();
     gs = gs->applyMove(white_moves[user_move]);
     gs->show();
@@ -303,40 +325,9 @@ void humanGamePlay()
       }
       else valid_move = true;
     }
-
+    system("clear");
     std::cout << "Applied move: " << black_moves[user_move].toString();
     gs = gs->applyMove(black_moves[user_move]);
     gs->show();
-  }
-}
-
-void timedAlphaBetaSearch(std::shared_ptr<GameStateIf<2>> gameState_ptr, int32_t depth, int32_t alpha, int32_t beta, bool maxPlayer)
-{
-    auto start = std::chrono::high_resolution_clock::now();
-
-    auto [move, eval] = alphaBetaSearch(gameState_ptr, depth, alpha, beta, maxPlayer);
-
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
-
-    // Write depth and elapsed time to CSV file
-    std::ofstream csvFile("timing_results.csv", std::ios::app); // Open in append mode
-    if (csvFile.is_open())
-    {
-        csvFile << depth << "," << elapsed.count() << "\n";
-        csvFile.close();
-    }
-    else
-    {
-        std::cerr << "Unable to open the CSV file for writing." << std::endl;
-    }
-}
-
-void generateTimesCvs()
-{
-  for(auto i = 1; i < 13; i++)
-  {
-    std::shared_ptr<GameStateIf<2>> gs = std::make_shared<CheckersGameState>();
-    timedAlphaBetaSearch(gs, i, -101, 101, true);
   }
 }

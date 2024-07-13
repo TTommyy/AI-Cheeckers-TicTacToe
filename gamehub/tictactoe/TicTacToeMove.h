@@ -1,5 +1,5 @@
 #pragma once
-#include "../inc/Move.h"
+#include "Move.h"
 
 
 class TicTacToeMove : public Move

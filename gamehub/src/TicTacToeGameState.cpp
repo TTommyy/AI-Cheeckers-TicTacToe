@@ -1,5 +1,5 @@
-#include "../inc/TicTacToeGameState.h"
-#include "../inc/Move.h"
+#include "TicTacToeGameState.h"
+#include "Move.h"
 
 #include <array>
 #include <cstdlib>
@@ -10,7 +10,7 @@
 #include <algorithm>
 
 constexpr int32_t REMOVED_FIELD{-1};
-constexpr auto REMOVED_FIELD_FACTOR{0.35f};
+constexpr auto REMOVED_FIELD_FACTOR{0.60f};
 constexpr int32_t WINNING_LENGTH{4};
 using DirectionVector = std::vector<std::pair<int32_t, int32_t>>;
 const DirectionVector UP_DOWN = {{1, 0}, {-1, 0}};

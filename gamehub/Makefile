@@ -2,7 +2,7 @@
 CXX = clang++
 
 # Compiler flags
-CXXFLAGS = -std=c++20 -Wall -Iinclude
+CXXFLAGS = -std=c++20 -Wall -Iinc -Ialgs -Icheckers -Itictactoe
 
 # Linker flags
 LDFLAGS = 
@@ -14,7 +14,7 @@ SRC = $(wildcard src/*.cpp)
 OBJ = $(SRC:.cpp=.o)
 
 # Executable name
-EXEC = checkers
+EXEC = gamehub
 
 # Default target
 all: $(EXEC)

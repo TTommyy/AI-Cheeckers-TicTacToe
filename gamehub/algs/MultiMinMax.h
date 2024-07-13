@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GameStateIf.h"
-#include "Tic.h"
 
 #include <cstdint>
 #include <utility>
@@ -10,6 +9,7 @@
 #include <iostream>
 #include <memory>
 #include <numeric>
+#include <future>
 
 template <int32_t NUMBER_OF_PLAYERS>
 int32_t getNextPlayer(int32_t currentPlayer)
@@ -32,17 +32,27 @@ std::pair<std::shared_ptr<Move>, std::array<int32_t, NUMBER_OF_PLAYERS>> multiMa
   std::array<int32_t, NUMBER_OF_PLAYERS> bestScore;
   bestScore.fill(INT32_MIN);
   auto bestSum = std::accumulate(bestScore.begin(), bestScore.end(), 0);
+
+  std::vector<std::future<std::pair<std::shared_ptr<Move>, std::array<int32_t, NUMBER_OF_PLAYERS>>>> futures;
   for (const auto& move : moves)
   {
-    auto newState = gameState_ptr->applyMove(move);
-    const auto [_, score] = multiMaxMin<NUMBER_OF_PLAYERS>(newState, depth - 1, nextPlayer);
+    futures.push_back( std::async(std::launch::async, [=, &gameState_ptr]() {
+      const auto newState = gameState_ptr->applyMove(move);
+      return multiMaxMin<NUMBER_OF_PLAYERS>(newState, depth - 1, nextPlayer);
+    }));
+  }
+
+  for (size_t i = 0; i < moves.size(); ++i)
+  {
+    const auto [_, score] = futures[i].get();
     const auto newSum = std::accumulate(score.begin(), score.end(), 0);
     if (score[currentPlayer] > bestScore[currentPlayer] || (score[currentPlayer] == bestScore[currentPlayer] && newSum < bestSum))
     {
-      bestMove = move;
+      bestMove = moves[i];
       bestScore = score;
       bestSum = newSum;
     }
   }
+
   return {std::make_shared<Move>(bestMove), bestScore};
 }
