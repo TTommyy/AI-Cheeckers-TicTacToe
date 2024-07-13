@@ -1,7 +1,7 @@
 #pragma once
 #include "FigureTypeE.h"
 #include "PlayerE.h"
-#include "Move.h"
+#include "CheckersMove.h"
 
 #include <utility>
 #include <array>
@@ -15,7 +15,7 @@ public:
   using Board = std::array<std::array<FigureTypeE, BOARD_SIZE>, BOARD_SIZE>;
   virtual ~CheckersBoardIf() = default;
   virtual std::string toString() const = 0;
-  virtual std::vector<Move> getPossibleMoves(const PlayerE&) const = 0;
+  virtual std::vector<CheckersMove> getPossibleMoves(const PlayerE&) const = 0;
   virtual void show() = 0;
   virtual Board getBoard() const = 0;
   virtual void setBoard(Board) = 0;

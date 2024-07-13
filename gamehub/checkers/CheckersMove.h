@@ -1,11 +1,13 @@
 # pragma once
 
+#include "MoveIf.h" 
+
 #include <sstream>
 #include <cstdint>
 #include <vector>
 #include <utility>
 
-class Move
+class CheckersMove : public MoveIf
 {
 public:
   using Field = std::pair<int32_t, int32_t>;
@@ -15,13 +17,13 @@ public:
     Field to;
     std::vector<Field> capctured;
   };
-  Move(Field from, Field to, std::vector<Field> captured) 
+  CheckersMove(Field from, Field to, std::vector<Field> captured) 
       : m_from{from}, m_to{to}, m_captured{captured}{}
-  Move(Field field, int32_t player): m_field{field}, m_player{player}
+  CheckersMove(Field field, int32_t player): m_field{field}, m_player{player}
   {}
-  Move(const Move&) = default;
-  explicit Move() = default;
-  virtual ~Move() = default;
+  CheckersMove(const CheckersMove&) = default;
+  explicit CheckersMove() = default;
+  virtual ~CheckersMove() = default;
 
   Move_t getMove() const
   {
@@ -33,7 +35,7 @@ public:
     return m_captured.size();
   }
 
-  virtual std::string toString() const
+  virtual std::string toString() const override
   {
     std::string ss;
     ss += ("From: (" + std::to_string(m_from.first) +"," + std::to_string(m_from.second) + ")\n");
@@ -47,7 +49,7 @@ public:
     return ss;
   }
 
-  bool operator==(const Move& other)
+  bool operator==(const CheckersMove& other)
   {
     return m_from == other.m_from && m_to == other.m_to && m_captured == other.m_captured;
   } 

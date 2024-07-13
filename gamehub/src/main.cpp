@@ -102,7 +102,7 @@ void computerSimulation()
     }
 
     to_move = !to_move;
-    std::cout << (*move).toString();
+    std::cout << (*move)->toString();
     gs = gs->applyMove(*move);
     gs->show();
   }
@@ -111,8 +111,8 @@ void computerSimulation()
 namespace
 {
   constexpr int32_t NUMBER_OF_PLAYERS{4};
-  constexpr int32_t FIRST_MOVE_DEPTH{1};
-  constexpr int32_t MOVE_DEPTH{10};
+  constexpr int32_t FIRST_MOVE_DEPTH{4};
+  constexpr int32_t MOVE_DEPTH{8};
   constexpr int32_t TIC_TAC_BOARD_SIZE{7};
 }
 
@@ -128,7 +128,7 @@ void ComputerTicTacToe()
   {
     d = i < NUMBER_OF_PLAYERS ? FIRST_MOVE_DEPTH : MOVE_DEPTH;
     auto[move, evals] = multiMaxMin(gs, d, to_move);
-    gs = gs->applyMove(*move);
+    gs = gs->applyMove(move);
     gs->show();
     std::cout << "Future predictions: ";
     for (auto e: evals) std::cout << e << " ";
@@ -164,7 +164,7 @@ void whiteHumanPlayer()
     for (const auto& m: moves)
     {
       std::cout << "Move number: " << j++ << "\n";
-      std::cout << m.toString();
+      std::cout << m->toString();
     }
 
     bool valid_move = false;
@@ -181,7 +181,7 @@ void whiteHumanPlayer()
       else valid_move = true;
     }
     system("clear");
-    std::cout << "Applied move: " << moves[user_move].toString();
+    std::cout << "Applied move: " << moves[user_move]->toString();
     gs = gs->applyMove(moves[user_move]);
     gs->show();
 
@@ -194,7 +194,7 @@ void whiteHumanPlayer()
       return;
     }
 
-    std::cout << (*move).toString();
+    std::cout << (*move)->toString();
     gs = gs->applyMove(*move);
     gs->show();
   }
@@ -217,7 +217,7 @@ void blackHumanPlayer()
       return;
     }
 
-    std::cout << (*move).toString();
+    std::cout << (*move)->toString();
     gs = gs->applyMove(*move);
     gs->show();
 
@@ -233,7 +233,7 @@ void blackHumanPlayer()
     for (const auto& m: moves)
     {
       std::cout << "Move number: " << j++ << "\n";
-      std::cout << m.toString();
+      std::cout << m->toString();
     }
 
     bool valid_move = false;
@@ -250,7 +250,7 @@ void blackHumanPlayer()
       else valid_move = true;
     }
     system("clear");
-    std::cout << "Applied move: " << moves[user_move].toString();
+    std::cout << "Applied move: " << moves[user_move]->toString();
     gs = gs->applyMove(moves[user_move]);
     gs->show();
   }
@@ -276,7 +276,7 @@ void humanGamePlay()
     for (const auto& m: white_moves)
     {
       std::cout << "Move number: " << j++ << "\n";
-      std::cout << m.toString();
+      std::cout << m->toString();
     }
 
     bool valid_move = false;
@@ -293,7 +293,7 @@ void humanGamePlay()
       else valid_move = true;
     }
     system("clear");
-    std::cout << "Applied move: " << white_moves[user_move].toString();
+    std::cout << "Applied move: " << white_moves[user_move]->toString();
     gs = gs->applyMove(white_moves[user_move]);
     gs->show();
 
@@ -309,7 +309,7 @@ void humanGamePlay()
     for (const auto& m: black_moves)
     {
       std::cout << "Move number: " << j++ << "\n";
-      std::cout << m.toString();
+      std::cout << m->toString();
     }
 
     valid_move = false;
@@ -326,7 +326,7 @@ void humanGamePlay()
       else valid_move = true;
     }
     system("clear");
-    std::cout << "Applied move: " << black_moves[user_move].toString();
+    std::cout << "Applied move: " << black_moves[user_move]->toString();
     gs = gs->applyMove(black_moves[user_move]);
     gs->show();
   }

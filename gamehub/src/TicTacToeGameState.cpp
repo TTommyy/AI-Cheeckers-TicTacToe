@@ -1,5 +1,5 @@
 #include "TicTacToeGameState.h"
-#include "Move.h"
+#include "TicTacToeMove.h"
 
 #include <array>
 #include <cstdlib>
@@ -7,6 +7,7 @@
 #include <vector>
 #include <random>
 #include <iostream>
+#include <sstream>
 #include <algorithm>
 
 constexpr int32_t REMOVED_FIELD{-1};
@@ -53,14 +54,12 @@ bool TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::isTerminal()
 {
   if (getWinner()) return true;
 
-  for (const auto& row: m_board)
+  for (int32_t player = 0; player < NUMBER_OF_PLAYERS; player++)
   {
-    for (const auto& col: row)
+    const auto moves = getPossibleMoves(player);
+    if (!moves.empty() && moves.front().m_player != -1)
     {
-      if (col == 0)
-      {
-        return false;
-      }
+      return false;
     }
   }
   return true;
@@ -129,18 +128,22 @@ std::array<int32_t, NUMBER_OF_PLAYERS> TicTacToeGameState<NUMBER_OF_PLAYERS, BOA
 }
 
 template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
-std::vector<Move> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::getPossibleMoves()
+std::vector<std::shared_ptr<MoveIf>> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::getPossibleMoves()
 {
   auto moves = getPossibleMoves(m_playerToMove);
   std::random_device rd;
   std::mt19937 g(rd());
   std::shuffle(moves.begin(), moves.end(), g);
-  return moves;
+  std::vector<std::shared_ptr<MoveIf>> res;
+  for(const auto& m: moves) res.push_back(std::make_shared<TicTacToeMove>(m));
+  return res;
 }
 
 template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
-std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::applyMove(const Move move)
+std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::applyMove(const std::shared_ptr<MoveIf> move_ptr)
 {
+  const auto move = dynamic_cast<TicTacToeMove&>(*move_ptr);
+
   const auto [row, col] = move.m_field;
   const auto player = move.m_player;
 
@@ -213,14 +216,14 @@ void TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::show()
 
 
 template<int32_t NUMBER_OF_PLAYERS, int32_t BOARD_SIZE>
-std::vector<Move> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::getPossibleMoves(int32_t player)
+std::vector<TicTacToeMove> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::getPossibleMoves(int32_t player)
 {
   if (m_possibleMoves.contains(player)) 
   {
     return m_possibleMoves[player];
   }
 
-  std::vector<Move> res;
+  std::vector<TicTacToeMove> res;
   if (m_moveCounter < NUMBER_OF_PLAYERS) // first moves
   {
     for (auto y = 1; y < BOARD_SIZE -1; y++)
@@ -229,7 +232,7 @@ std::vector<Move> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::getPossible
       {
         if (m_board[y][x] == 0)
         {
-          res.push_back(Move(std::make_pair(y, x), player));
+          res.push_back(TicTacToeMove(std::make_pair(y, x), player));
         }
       }
     }
@@ -246,14 +249,14 @@ std::vector<Move> TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::getPossible
           auto newX = field.second + dx;
           if (validField(newY, newX) && m_board[newY][newX] == 0)
           {
-            res.push_back(Move(std::make_pair(newY, newX), player));
+            res.push_back(TicTacToeMove(std::make_pair(newY, newX), player));
           }
         }
       }
     }
   }
 
-  if (res.empty()) res.push_back(Move(std::make_pair(0, 0), -1)); // pass move
+  if (res.empty()) res.push_back(TicTacToeMove(std::make_pair(0, 0), -1)); // pass move
   m_possibleMoves.insert({player, res});
   return res;
 }

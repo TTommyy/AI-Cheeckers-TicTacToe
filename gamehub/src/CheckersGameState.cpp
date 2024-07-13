@@ -37,19 +37,21 @@ std::array<int32_t, 2> CheckersGameState::evaluate()
   return {score, -score};
 }
 
-std::vector<Move> CheckersGameState::getPossibleMoves()
+std::vector<std::shared_ptr<MoveIf>> CheckersGameState::getPossibleMoves()
 {
-  if (m_possibleMoves) return m_possibleMoves.value();
-  m_possibleMoves = m_board_ptr->getPossibleMoves(m_playerToMove);
-  // std::reverse(m_possibleMoves.value().begin(), m_possibleMoves.value().end());
-  return m_possibleMoves.value();
-  // std::random_device rd;
-  // std::mt19937 g(rd());
-  // std::shuffle(m_possibleMoves.value().begin(), m_possibleMoves.value().end(), g);
-  // return m_possibleMoves.value();
+  if (!m_possibleMoves)  m_possibleMoves = m_board_ptr->getPossibleMoves(m_playerToMove);
+  std::random_device rd;
+  std::mt19937 g(rd());
+  std::shuffle(m_possibleMoves.value().begin(), m_possibleMoves.value().end(), g);
+
+  std::vector<std::shared_ptr<MoveIf>> res;
+  for(const auto& m: m_possibleMoves.value()) res.push_back(std::make_shared<CheckersMove>(m));
+
+  return res;
 }
-std::shared_ptr<GameStateIf<2>> CheckersGameState::applyMove(const Move move)
+std::shared_ptr<GameStateIf<2>> CheckersGameState::applyMove(const std::shared_ptr<MoveIf> move_ptr)
 {
+  const auto move = dynamic_cast<CheckersMove&>(*move_ptr);
   auto bar_board = m_board_ptr->getBoard();
   auto move_desctription = move.getMove();
 

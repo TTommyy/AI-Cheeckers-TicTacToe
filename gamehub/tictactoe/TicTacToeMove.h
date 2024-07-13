@@ -1,10 +1,11 @@
 #pragma once
-#include "Move.h"
+#include "MoveIf.h"
 
 
-class TicTacToeMove : public Move
+class TicTacToeMove : public MoveIf
 {
 public:
+  using Field = std::pair<int32_t, int32_t>;
   TicTacToeMove(Field field, int32_t player): m_field{field}, m_player{player}
   {}
   Field m_field;

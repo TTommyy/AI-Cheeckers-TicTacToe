@@ -9,9 +9,9 @@
 #include <memory>
 #include <cmath>
 
-class Move;
+class MoveIf;
 
-std::pair<std::optional<Move>, int32_t> alphaBetaSearch(std::shared_ptr<GameStateIf<2>> gameState_ptr, int32_t depth, int32_t alpha, int32_t beta, bool maxPlayer)
+std::pair<std::optional<std::shared_ptr<MoveIf>>, int32_t> alphaBetaSearch(std::shared_ptr<GameStateIf<2>> gameState_ptr, int32_t depth, int32_t alpha, int32_t beta, bool maxPlayer)
 {
   const auto moves = gameState_ptr->getPossibleMoves();
   if (gameState_ptr->isTerminal() || depth == 0 || moves.size() == 0)

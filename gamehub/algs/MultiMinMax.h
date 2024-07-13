@@ -11,6 +11,8 @@
 #include <numeric>
 #include <future>
 
+class MoveIf;
+
 template <int32_t NUMBER_OF_PLAYERS>
 int32_t getNextPlayer(int32_t currentPlayer)
 {
@@ -18,7 +20,7 @@ int32_t getNextPlayer(int32_t currentPlayer)
 }
 
 template<int32_t NUMBER_OF_PLAYERS>
-std::pair<std::shared_ptr<Move>, std::array<int32_t, NUMBER_OF_PLAYERS>> multiMaxMin(std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> gameState_ptr, int32_t depth, int32_t currentPlayer)
+std::pair<std::shared_ptr<MoveIf>, std::array<int32_t, NUMBER_OF_PLAYERS>> multiMaxMin(std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> gameState_ptr, int32_t depth, int32_t currentPlayer)
 {
   const auto moves = gameState_ptr->getPossibleMoves();
   if (gameState_ptr->isTerminal() or depth == 0 || moves.size() == 0)
@@ -33,7 +35,7 @@ std::pair<std::shared_ptr<Move>, std::array<int32_t, NUMBER_OF_PLAYERS>> multiMa
   bestScore.fill(INT32_MIN);
   auto bestSum = std::accumulate(bestScore.begin(), bestScore.end(), 0);
 
-  std::vector<std::future<std::pair<std::shared_ptr<Move>, std::array<int32_t, NUMBER_OF_PLAYERS>>>> futures;
+  std::vector<std::future<std::pair<std::shared_ptr<MoveIf>, std::array<int32_t, NUMBER_OF_PLAYERS>>>> futures;
   for (const auto& move : moves)
   {
     futures.push_back( std::async(std::launch::async, [=, &gameState_ptr]() {
@@ -54,5 +56,5 @@ std::pair<std::shared_ptr<Move>, std::array<int32_t, NUMBER_OF_PLAYERS>> multiMa
     }
   }
 
-  return {std::make_shared<Move>(bestMove), bestScore};
+  return {bestMove, bestScore};
 }

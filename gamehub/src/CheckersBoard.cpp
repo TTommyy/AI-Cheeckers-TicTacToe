@@ -2,7 +2,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iostream>
-#include "Move.h"
+#include "CheckersMove.h"
 
 namespace
 {
@@ -83,9 +83,9 @@ void CheckersBoard::show()
   std::cout << ss.str();
 }
 
-std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
+std::vector<CheckersMove> CheckersBoard::getPossibleMoves(const PlayerE& player) const
 {
-  std::vector<Move> moves;
+  std::vector<CheckersMove> moves;
   int32_t mostCaptured = 0;
 
   // check man can kill
@@ -99,7 +99,7 @@ std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
           (figure == FigureTypeE::BlackMan && player == PlayerE::Black))
       {
         // [end_field, captures_by_the_way]
-        auto cap_vec = checkIfManCanKill(y, x, player, std::vector<Move::Field>(), m_board);
+        auto cap_vec = checkIfManCanKill(y, x, player, std::vector<CheckersMove::Field>(), m_board);
 
         for(const auto &pair: cap_vec)
         {
@@ -111,7 +111,7 @@ std::vector<Move> CheckersBoard::getPossibleMoves(const PlayerE& player) const
           (figure == FigureTypeE::BlackKing && player == PlayerE::Black))
       {
         // [end_field, captures_by_the_way]
-        auto cap_vec = checkIfKingCanKill(y,x, player, std::vector<Move::Field>(), m_board);
+        auto cap_vec = checkIfKingCanKill(y,x, player, std::vector<CheckersMove::Field>(), m_board);
 
         for(const auto &pair: cap_vec)
         {
@@ -208,7 +208,7 @@ void CheckersBoard::intializeBoard()
   }
 }
 
-CheckersBoard::CapcturesVector CheckersBoard::checkIfManCanKill(int32_t y, int32_t x, const PlayerE& player, std::vector<Move::Field> cap, Board board) const
+CheckersBoard::CapcturesVector CheckersBoard::checkIfManCanKill(int32_t y, int32_t x, const PlayerE& player, std::vector<CheckersMove::Field> cap, Board board) const
 {
   CapcturesVector res;
   const PlayerE enemy = player == PlayerE::White? PlayerE::Black : PlayerE::White;
@@ -238,7 +238,7 @@ CheckersBoard::CapcturesVector CheckersBoard::checkIfManCanKill(int32_t y, int32
 }
 
 // KingsLogic
-CheckersBoard::CapcturesVector CheckersBoard::checkIfKingCanKill(int32_t y, int32_t x, const PlayerE& player, std::vector<Move::Field> cap, Board board) const
+CheckersBoard::CapcturesVector CheckersBoard::checkIfKingCanKill(int32_t y, int32_t x, const PlayerE& player, std::vector<CheckersMove::Field> cap, Board board) const
 {
   CapcturesVector res;
   const PlayerE enemy = player == PlayerE::White ? PlayerE::Black : PlayerE::White;
@@ -295,9 +295,9 @@ CheckersBoard::CapcturesVector CheckersBoard::checkIfKingCanKill(int32_t y, int3
   return res;
 }
 
-std::vector<Move> CheckersBoard::checkIfManCanMove(int32_t y, int32_t x, const PlayerE& player) const
+std::vector<CheckersMove> CheckersBoard::checkIfManCanMove(int32_t y, int32_t x, const PlayerE& player) const
 {
-  std::vector<Move> res;
+  std::vector<CheckersMove> res;
   DirectionVector dv = player == PlayerE::White? AHEAD_DIRECTIONS : BACKWARDS_DIRECTIONS;
   for (const auto& [dy, dx] : dv)
   {
@@ -307,7 +307,7 @@ std::vector<Move> CheckersBoard::checkIfManCanMove(int32_t y, int32_t x, const P
     {
       newY += dy;
       newX += dx;
-      Move m = Move({y, x}, {newY, newX}, {});
+      CheckersMove m = CheckersMove({y, x}, {newY, newX}, {});
       res.push_back(m);
     }
   }
@@ -315,9 +315,9 @@ std::vector<Move> CheckersBoard::checkIfManCanMove(int32_t y, int32_t x, const P
   return res;
 }
 
-std::vector<Move> CheckersBoard::checkIfKingCanMove(int32_t y, int32_t x) const
+std::vector<CheckersMove> CheckersBoard::checkIfKingCanMove(int32_t y, int32_t x) const
 {
-  std::vector<Move> res;
+  std::vector<CheckersMove> res;
 
   for (const auto& [dy, dx] : ALL_DIRECTIONS)
   {
@@ -327,7 +327,7 @@ std::vector<Move> CheckersBoard::checkIfKingCanMove(int32_t y, int32_t x) const
     {
       newY += dy;
       newX += dx;
-      Move m = Move({y, x}, {newY, newX}, {});
+      CheckersMove m = CheckersMove({y, x}, {newY, newX}, {});
       res.push_back(m);
     }
   }
