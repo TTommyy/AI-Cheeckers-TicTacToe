@@ -11,8 +11,8 @@
 #include <algorithm>
 
 constexpr int32_t REMOVED_FIELD{-1};
-constexpr auto REMOVED_FIELD_FACTOR{0.60f};
-constexpr int32_t WINNING_LENGTH{4};
+constexpr auto REMOVED_FIELD_FACTOR{0.50f};
+constexpr int32_t WINNING_LENGTH{3};
 using DirectionVector = std::vector<std::pair<int32_t, int32_t>>;
 const DirectionVector UP_DOWN = {{1, 0}, {-1, 0}};
 const DirectionVector LEFT_RIGHT = {{0, -1}, {0, 1}};
@@ -305,6 +305,7 @@ bool TicTacToeGameState<NUMBER_OF_PLAYERS, BOARD_SIZE>::validField(int32_t y, in
 }
 
 template class TicTacToeGameState<int32_t(3), int32_t(6)>;
+template class TicTacToeGameState<int32_t(4), int32_t(6)>;
 template class TicTacToeGameState<int32_t(4), int32_t(7)>;
 template class TicTacToeGameState<int32_t(5), int32_t(10)>;
 

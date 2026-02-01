@@ -14,3 +14,6 @@ htmlcov/
 .vscode/
 .idea/
 .ccls-cache/
+*.cache
+*compile_commands.json
+gamehub/gamehub

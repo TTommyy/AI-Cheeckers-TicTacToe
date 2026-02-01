@@ -3,7 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <random>
-  
+
 CheckersGameState::CheckersGameState(): m_board_ptr{std::make_shared<CheckersBoard>()}, m_playerToMove{PlayerE::White}
 {}
 

@@ -1,10 +1,8 @@
-#include "CheckersBoard.h"
 #include "CheckersGameState.h"
 #include "AlphaBetaSearch.h"
 #include "MultiMinMax.h"
 #include "TicTacToeGameState.h"
 #include <iostream>
-#include <fstream>
 
 constexpr int32_t DEPTH = 10;
 void computerSimulation();
@@ -15,7 +13,7 @@ void ComputerTicTacToe();
 
 void welcomeUser()
 {
-  std::cout 
+  std::cout
     << "    Welcome to the game hub. Choose your game by entering number:\n"
     << "    1 - Checkers\n"
     << "    2 - TicTacToe\n"
@@ -31,7 +29,7 @@ int exitProgram()
 void checkersMenu()
 {
   system("clear");
-  std::cout 
+  std::cout
     << "    Cheeckers. Entrer correct mode\n"
     << "    1 - White Human Player\n"
     << "    2 - Black Human Player\n"
@@ -66,7 +64,7 @@ void checkersMenu()
   }
 }
 
-int main() 
+int main()
 {
   welcomeUser();
   int mode;
@@ -110,14 +108,15 @@ void computerSimulation()
 
 namespace
 {
-  constexpr int32_t NUMBER_OF_PLAYERS{4};
-  constexpr int32_t FIRST_MOVE_DEPTH{4};
+  constexpr int32_t NUMBER_OF_PLAYERS{3};
+  constexpr int32_t FIRST_MOVE_DEPTH{5};
   constexpr int32_t MOVE_DEPTH{8};
-  constexpr int32_t TIC_TAC_BOARD_SIZE{7};
+  constexpr int32_t TIC_TAC_BOARD_SIZE{6};
 }
 
 void ComputerTicTacToe()
 {
+  system("clear");
   std::shared_ptr<GameStateIf<NUMBER_OF_PLAYERS>> gs= std::make_shared<TicTacToeGameState<NUMBER_OF_PLAYERS, TIC_TAC_BOARD_SIZE>>();
   gs->show();
 
@@ -127,8 +126,16 @@ void ComputerTicTacToe()
   while(!gs->isTerminal())
   {
     d = i < NUMBER_OF_PLAYERS ? FIRST_MOVE_DEPTH : MOVE_DEPTH;
-    auto[move, evals] = multiMaxMin(gs, d, to_move);
+
+    auto start = std::chrono::high_resolution_clock::now();
+    auto [move, evals] = multiMaxMin(gs, d, to_move);
+    auto end = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double, std::milli> duration = end - start;
+    std::cout << "Evaluation took: " << duration.count() << " ms. Depth: " << d <<"\n";
+
     gs = gs->applyMove(move);
+    std::cout << "Apply move: " << move->toString();
     gs->show();
     std::cout << "Future predictions: ";
     for (auto e: evals) std::cout << e << " ";

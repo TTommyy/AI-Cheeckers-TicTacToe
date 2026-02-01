@@ -1,5 +1,7 @@
 #pragma once
+
 #include "MoveIf.h"
+#include <sstream>
 
 
 class TicTacToeMove : public MoveIf
@@ -10,9 +12,12 @@ public:
   {}
   Field m_field;
   int32_t m_player;
+
   std::string toString() const
   {
-    return "To do\n";
+    std::stringstream ss;
+    ss << "Field: [" << std::to_string(m_field.first) << "," << std::to_string(m_field.second) << "], Player: " + std::to_string(m_player) + "\n";
+    return ss.str();
   }
 };
 
